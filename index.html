@@ -1,0 +1,2308 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACT 90 Jours — Baudouin</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070a12;--bg2:#0c1020;--card:#111827;--card2:#1a2235;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#e2e8f8;--text2:#8892a4;--text3:#4a5568;
+  --gold:#e8a020;--gold2:#ffc842;--red:#ef4444;--green:#10b981;
+  --p1:#f43f5e;--p2:#8b5cf6;--p3:#06b6d4;--p4:#f59e0b;--p5:#10b981;--p6:#e8a020;
+  --phase-color:var(--gold);--radius:12px;--radius-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden;}
+
+/* HEADER */
+.app-header{position:sticky;top:0;z-index:100;background:rgba(7,10,18,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.header-left{display:flex;align-items:center;gap:14px;}
+.app-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);white-space:nowrap;}
+.day-badge{display:flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--border2);border-radius:20px;padding:3px 11px;font-size:12px;color:var(--text2);}
+.day-badge .dn{color:var(--gold);font-weight:700;}
+.header-right{display:flex;align-items:center;gap:6px;}
+.btn-hdr{display:flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:5px 11px;color:var(--text2);font-size:12px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.btn-hdr:hover{border-color:var(--gold);color:var(--gold);}
+.timer-mini{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);background:var(--card);border:1px solid var(--border);border-radius:7px;padding:5px 10px;min-width:78px;text-align:center;cursor:pointer;}
+.timer-mini.running{color:var(--red);border-color:rgba(239,68,68,0.3);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+
+/* NAV */
+.nav-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+.nav-tabs::-webkit-scrollbar{display:none;}
+.nav-tab{flex:1;min-width:90px;padding:12px 14px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(232,160,32,.05);}
+
+/* SECTIONS */
+.tab-section{display:none;padding:20px;max-width:920px;margin:0 auto;animation:fadeIn .3s ease;}
+.tab-section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* PHASE SELECTOR */
+.phase-selector{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:16px;}
+.phase-btn{padding:8px 4px;border-radius:var(--radius-sm);border:2px solid transparent;background:var(--card);color:var(--text2);font-size:10px;font-weight:500;cursor:pointer;transition:all .2s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'DM Sans',sans-serif;}
+.phase-btn .pi{font-size:18px;}
+.phase-btn .pl{font-size:9px;line-height:1.2;}
+.phase-btn:hover{background:var(--card2);}
+.phase-btn.active{border-color:var(--phase-color);background:color-mix(in srgb,var(--phase-color) 10%,var(--card));color:var(--phase-color);}
+
+/* CONTROLS BAR */
+.controls-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;justify-content:space-between;}
+.scenario-selector{display:flex;gap:5px;flex-wrap:wrap;}
+.sc-btn{padding:5px 11px;border-radius:16px;border:1px solid var(--border2);background:var(--card);color:var(--text2);font-size:12px;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+.sc-btn:hover{border-color:var(--gold);color:var(--gold);}
+.sc-btn.active{background:var(--gold);color:#000;border-color:var(--gold);font-weight:600;}
+.level-selector{display:flex;gap:4px;}
+.lv-btn{padding:5px 9px;border-radius:6px;border:1px solid var(--border);background:var(--card);font-size:14px;cursor:pointer;transition:all .2s;}
+.lv-btn.active{border-color:var(--gold);background:rgba(232,160,32,.15);}
+
+/* PHASE HEADER */
+.phase-header{border-radius:var(--radius);border:1px solid;padding:18px 22px;margin-bottom:16px;position:relative;overflow:hidden;}
+.phase-header::before{content:'';position:absolute;top:0;right:0;width:180px;height:100%;background:linear-gradient(to left,color-mix(in srgb,var(--phase-color) 7%,transparent),transparent);}
+.phase-name{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:3px;}
+.phase-desc{font-size:13px;color:var(--text2);}
+.phase-weeks-row{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;}
+.wk-btn{padding:3px 10px;border-radius:10px;font-size:11px;font-weight:500;background:var(--card2);color:var(--text2);cursor:pointer;border:1px solid var(--border);transition:all .2s;}
+.wk-btn.active{background:var(--phase-color);color:#000;border-color:var(--phase-color);}
+
+/* SCENARIO NOTICE */
+.sc-notice{background:var(--card2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--text2);display:none;}
+.sc-notice.show{display:block;}
+
+/* SCHEDULE */
+.section-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;}
+.schedule-list{display:flex;flex-direction:column;gap:3px;margin-bottom:20px;}
+.sched-row{display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:stretch;position:relative;}
+.sched-row::after{content:'';position:absolute;left:55px;top:28px;width:1px;bottom:-3px;background:var(--border);}
+.sched-row:last-child::after{display:none;}
+.sched-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);text-align:right;padding-top:9px;}
+.sched-block{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 13px;transition:all .2s;}
+.sched-block:hover{border-color:var(--border2);}
+.sched-block.ex{border-left:3px solid var(--phase-color);}
+.sched-block.sleep{opacity:.5;}
+.sched-label{font-size:13px;font-weight:500;}
+.sched-dur{font-size:11px;color:var(--text3);}
+
+/* EXERCISES */
+.exercises-grid{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+.ex-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s;}
+.ex-card:hover{border-color:var(--border2);}
+.ex-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;user-select:none;}
+.ex-head-l{display:flex;align-items:center;gap:11px;}
+.ex-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:color-mix(in srgb,var(--phase-color) 15%,var(--card2));}
+.ex-name{font-size:14px;font-weight:600;}
+.ex-meta{font-size:11px;color:var(--text2);}
+.ex-chev{color:var(--text3);transition:transform .2s;font-size:16px;}
+.ex-card.open .ex-chev{transform:rotate(180deg);}
+.ex-body{display:none;padding:0 18px 18px;border-top:1px solid var(--border);}
+.ex-card.open .ex-body{display:block;}
+.ex-instr{font-size:13px;color:var(--text2);line-height:1.7;margin:13px 0;}
+.ex-steps{list-style:none;display:flex;flex-direction:column;gap:8px;margin:10px 0;}
+.ex-steps li{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.5;}
+.sn{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:var(--phase-color);color:#000;margin-top:1px;}
+.ex-toolbar{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card2);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;}
+.btn:hover{border-color:var(--border2);color:var(--text);}
+.btn-gold{background:var(--gold);color:#000;border-color:var(--gold);font-weight:600;}
+.btn-gold:hover{background:var(--gold2);border-color:var(--gold2);color:#000;}
+.btn-phase{background:color-mix(in srgb,var(--phase-color) 13%,var(--card2));border-color:var(--phase-color);color:var(--phase-color);}
+.btn-phase:hover{background:color-mix(in srgb,var(--phase-color) 22%,var(--card2));}
+.btn-red{border-color:var(--red);color:var(--red);}
+.btn-green{border-color:var(--green);color:var(--green);}
+
+/* NOTES & AUDIO */
+.ex-notes{width:100%;margin-top:10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;min-height:72px;transition:border-color .2s;}
+.ex-notes:focus{outline:none;border-color:var(--phase-color);}
+.audio-bar{display:flex;align-items:center;gap:9px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 13px;margin-top:10px;}
+.waveform{display:flex;align-items:center;gap:2px;height:20px;flex:1;}
+.wb{width:3px;background:var(--text3);border-radius:2px;height:3px;}
+.recording .wb{animation:wv .7s ease-in-out infinite;background:var(--red);}
+.wb:nth-child(1){animation-delay:0s}.wb:nth-child(2){animation-delay:.1s}.wb:nth-child(3){animation-delay:.2s}.wb:nth-child(4){animation-delay:.15s}.wb:nth-child(5){animation-delay:.05s}.wb:nth-child(6){animation-delay:.25s}.wb:nth-child(7){animation-delay:.1s}.wb:nth-child(8){animation-delay:.2s}
+@keyframes wv{0%,100%{height:3px;}50%{height:16px;}}
+.audio-status{font-size:11px;color:var(--text3);}
+.recordings-list{margin-top:8px;display:flex;flex-direction:column;gap:4px;}
+.rec-item{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:5px 9px;font-size:11px;color:var(--text2);}
+.rec-item audio{height:24px;flex:1;}
+.done-mark{display:inline-flex;align-items:center;gap:5px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);border-radius:6px;padding:5px 11px;color:#10b981;font-size:12px;font-weight:500;}
+
+/* CALENDAR */
+.cal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.cal-title{font-family:'Playfair Display',serif;font-size:19px;}
+.cal-legend{display:flex;gap:10px;font-size:11px;color:var(--text2);}
+.leg-item{display:flex;align-items:center;gap:5px;}
+.leg-dot{width:11px;height:11px;border-radius:3px;}
+.phases-bar{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-bottom:10px;}
+.pbar{height:4px;border-radius:2px;opacity:.7;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-dh{text-align:center;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;padding:3px 0;}
+.cal-d{aspect-ratio:1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;cursor:pointer;border:1px solid var(--border);background:var(--card);transition:all .15s;position:relative;}
+.cal-d:hover{border-color:var(--border2);}
+.cal-d .dn{font-weight:500;}
+.cal-d .dk{font-size:9px;margin-top:1px;}
+.cal-d.today{border-color:var(--gold);background:rgba(232,160,32,.08);color:var(--gold);font-weight:700;}
+.cal-d.missed{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.22);color:#ef4444;}
+.cal-d.done{background:rgba(16,185,129,.09);border-color:rgba(16,185,129,.22);color:#10b981;}
+.cal-d.future{opacity:.35;cursor:default;pointer-events:none;}
+.cal-d.ph1{border-top:2px solid var(--p1);}
+.cal-d.ph2{border-top:2px solid var(--p2);}
+.cal-d.ph3{border-top:2px solid var(--p3);}
+.cal-d.ph4{border-top:2px solid var(--p4);}
+.cal-d.ph5{border-top:2px solid var(--p5);}
+.cal-d.ph6{border-top:2px solid var(--p6);}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center;}
+.stat-v{font-size:26px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;}
+.stat-l{font-size:11px;color:var(--text2);margin-top:3px;}
+
+/* VALUES WHEEL */
+.values-wrap{display:grid;grid-template-columns:1fr 270px;gap:20px;align-items:start;}
+.canvas-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+canvas#vc{width:100%;max-width:380px;}
+.values-controls{display:flex;flex-direction:column;gap:8px;}
+.val-mode{display:flex;gap:5px;margin-bottom:6px;}
+.vm-btn{padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:var(--card);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.vm-btn.active{background:var(--gold);color:#000;border-color:var(--gold);}
+.val-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 13px;}
+.val-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.val-name{font-size:12px;font-weight:500;}
+.val-score{font-size:13px;font-weight:700;color:var(--gold);}
+input[type=range]{width:100%;accent-color:var(--gold);cursor:pointer;height:3px;}
+
+/* URGENCES */
+.urgence-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.proto-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.proto-head{padding:14px 18px;display:flex;align-items:center;gap:10px;}
+.proto-ico{font-size:22px;}
+.proto-name{font-size:14px;font-weight:600;}
+.proto-sub{font-size:11px;color:var(--text2);}
+.proto-body{padding:0 18px 16px;}
+.proto-step{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.proto-step:last-child{border:none;}
+.psn{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.pst{color:var(--text2);line-height:1.5;}
+.pst strong{color:var(--text);}
+.urgence-notice{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;font-size:13px;color:#ef4444;}
+
+/* JOURNAL */
+.journal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.journal-date{font-family:'Playfair Display',serif;font-size:18px;}
+.journal-entry{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;}
+.journal-prompts{display:flex;flex-direction:column;gap:14px;}
+.jp{display:flex;flex-direction:column;gap:6px;}
+.jp label{font-size:12px;font-weight:600;color:var(--text2);}
+.jp textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;min-height:62px;transition:border-color .2s;}
+.jp textarea:focus{outline:none;border-color:var(--gold);}
+.emotion-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.emo-chip{padding:4px 11px;border-radius:14px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;}
+.emo-chip.sel{background:rgba(232,160,32,.12);border-color:var(--gold);color:var(--gold);}
+.mood-row{display:flex;align-items:center;gap:10px;}
+.mood-row label{font-size:12px;color:var(--text2);min-width:90px;}
+.mood-val{font-size:13px;font-weight:700;color:var(--gold);min-width:22px;}
+.past-entries{margin-top:18px;}
+.past-entry{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:6px;}
+.pe-date{font-size:11px;color:var(--text3);margin-bottom:5px;}
+.pe-text{font-size:13px;color:var(--text2);}
+
+/* TIMER MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(5px);z-index:200;display:none;align-items:center;justify-content:center;}
+.modal-ov.open{display:flex;}
+.timer-modal{background:var(--card);border:1px solid var(--border2);border-radius:20px;padding:36px;text-align:center;min-width:290px;box-shadow:0 8px 40px rgba(0,0,0,.6);position:relative;}
+.modal-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;}
+.modal-close:hover{color:var(--text);}
+.timer-lbl{font-size:12px;color:var(--text3);margin-bottom:6px;}
+.timer-circle{position:relative;width:150px;height:150px;margin:0 auto 16px;}
+.timer-circle svg{transform:rotate(-90deg);}
+.timer-circle-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--gold);}
+.timer-presets{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;}
+.tp{padding:5px 12px;border-radius:13px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.tp:hover{border-color:var(--gold);color:var(--gold);}
+.timer-btns{display:flex;gap:8px;justify-content:center;}
+.timer-exlbl{font-size:11px;color:var(--text3);margin-top:10px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--card2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:11px 18px;font-size:13px;z-index:300;transform:translateY(20px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* UTILS */
+.section-title{font-family:'Playfair Display',serif;font-size:19px;margin-bottom:14px;}
+.divider{height:1px;background:var(--border);margin:18px 0;}
+
+/* PIVOTS ACT */
+.pivots-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+.pivot-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;border:1px solid;transition:all .2s;}
+.pivot-badge.active{opacity:1;}
+.pivot-badge.inactive{opacity:.28;filter:grayscale(.6);}
+
+/* DIFFICULTY */
+.diff-bar{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:14px;}
+.diff-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;min-width:80px;}
+.diff-levels{display:flex;gap:6px;}
+.diff-lv{font-size:12px;color:var(--text3);padding:3px 8px;border-radius:6px;border:1px solid var(--border);}
+.diff-lv.cur{background:var(--phase-color);color:#000;border-color:var(--phase-color);font-weight:700;}
+.diff-desc{font-size:12px;color:var(--gold);margin-left:4px;}
+
+/* PHYSICAL */
+.physique-section{background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(6,182,212,.04));border:1px solid rgba(16,185,129,.18);border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;}
+.physique-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.physique-title{font-size:14px;font-weight:700;color:#10b981;}
+.physique-badge{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:2px 8px;font-size:10px;font-weight:700;color:#10b981;text-transform:uppercase;letter-spacing:.5px;}
+.physique-content{font-size:13px;color:var(--text2);line-height:1.7;}
+.physique-content strong{color:var(--text);}
+.physique-steps{list-style:none;margin-top:8px;display:flex;flex-direction:column;gap:6px;}
+.physique-steps li{display:flex;gap:8px;font-size:13px;align-items:flex-start;}
+.physique-steps li::before{content:"→";color:#10b981;flex-shrink:0;font-weight:700;}
+
+/* LEVEL DIFF CARD */
+.level-diff-note{background:color-mix(in srgb,var(--phase-color) 8%,var(--card));border:1px solid color-mix(in srgb,var(--phase-color) 25%,transparent);border-radius:var(--radius-sm);padding:8px 13px;margin-top:8px;font-size:12px;color:var(--text2);}
+.level-diff-note strong{color:var(--phase-color);}
+
+/* SIGNS / FAQ / VARIANTES */
+.ex-signs{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.18);border-radius:var(--radius-sm);padding:11px 14px;margin-top:12px;}
+.ex-signs-title{font-size:11px;font-weight:700;color:#10b981;text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;display:flex;align-items:center;gap:5px;}
+.ex-signs ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.ex-signs ul li{font-size:12px;color:var(--text2);display:flex;gap:6px;align-items:flex-start;}
+.ex-signs ul li::before{content:"✓";color:#10b981;font-weight:700;flex-shrink:0;}
+
+.ex-faq{margin-top:12px;}
+.ex-faq-title{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;display:flex;align-items:center;gap:5px;}
+.faq-item{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;overflow:hidden;}
+.faq-q{padding:9px 13px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.faq-q:hover{background:rgba(255,255,255,.03);}
+.faq-arrow{color:var(--text3);font-size:12px;transition:transform .2s;flex-shrink:0;}
+.faq-item.open .faq-arrow{transform:rotate(180deg);}
+.faq-a{display:none;padding:0 13px 10px;font-size:12px;color:var(--text2);line-height:1.7;border-top:1px solid var(--border);}
+.faq-a strong{color:var(--text);}
+.faq-item.open .faq-a{display:block;}
+
+.ex-variante{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.18);border-radius:var(--radius-sm);padding:10px 14px;margin-top:8px;font-size:12px;color:var(--text2);line-height:1.6;}
+.ex-variante strong{color:#8b5cf6;}
+
+/* THÉORIE */
+.theorie-hero{background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(6,182,212,.05));border:1px solid rgba(139,92,246,.2);border-radius:var(--radius);padding:24px;margin-bottom:20px;}
+.theorie-hero h2{font-family:'Playfair Display',serif;font-size:22px;color:#8b5cf6;margin-bottom:8px;}
+.theorie-hero p{font-size:14px;color:var(--text2);line-height:1.8;}
+.theorie-hero .source-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25);border-radius:8px;padding:3px 10px;font-size:11px;color:#8b5cf6;margin-top:10px;font-weight:600;}
+
+.hexaflex-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.hex-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;border-top:3px solid;}
+.hex-card h3{font-size:14px;font-weight:700;margin-bottom:6px;}
+.hex-card p{font-size:12px;color:var(--text2);line-height:1.6;}
+.hex-card .hex-ex{font-size:11px;color:var(--text3);margin-top:6px;font-style:italic;}
+
+.theorie-section{margin-bottom:24px;}
+.theorie-section h3{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+
+.ex-theory-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:10px;}
+.ex-theory-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;}
+.ex-theory-name{font-size:14px;font-weight:700;}
+.ex-theory-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.ex-tag{display:inline-flex;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.tag-evidence{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#10b981;}
+.tag-pivot{background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25);color:#8b5cf6;}
+.tag-origin{background:rgba(232,160,32,.1);border:1px solid rgba(232,160,32,.25);color:var(--gold);}
+.ex-theory-body{font-size:13px;color:var(--text2);line-height:1.8;}
+.ex-theory-body strong{color:var(--text);}
+.ex-theory-body .evidence-block{background:rgba(16,185,129,.05);border-left:3px solid #10b981;padding:8px 12px;margin-top:10px;border-radius:0 6px 6px 0;font-size:12px;}
+.ex-theory-body .evidence-block cite{color:#10b981;font-style:normal;font-weight:600;}
+.ex-theory-why{background:rgba(232,160,32,.06);border:1px solid rgba(232,160,32,.15);border-radius:6px;padding:8px 12px;margin-top:10px;font-size:12px;color:var(--text2);}
+.ex-theory-why strong{color:var(--gold);}
+
+.phase-theory-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:10px;border-left:4px solid;}
+.pt-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.pt-name{font-size:15px;font-weight:700;}
+.pt-body{font-size:13px;color:var(--text2);line-height:1.7;}
+.pt-pivots{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+
+@media(max-width:640px){
+  .hexaflex-grid{grid-template-columns:repeat(2,1fr);}
+  .phase-selector{grid-template-columns:repeat(3,1fr);}
+  .urgence-grid{grid-template-columns:1fr;}
+  .values-wrap{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .controls-bar{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="header-left">
+    <div class="app-title">ACT 90J</div>
+    <div class="day-badge">Jour <span class="dn" id="currentDayNum">1</span> / 90</div>
+    <div class="day-badge" id="phaseIndicator" style="color:var(--gold);">Phase 1</div>
+  </div>
+  <div class="header-right">
+    <div class="timer-mini" id="timerMini" onclick="openTimer()">00:00</div>
+    <button class="btn-hdr" onclick="openTimer()">⏱ Timer</button>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav-tabs">
+  <button class="nav-tab active" onclick="showTab('programme',this)">📋 Programme</button>
+  <button class="nav-tab" onclick="showTab('calendrier',this)">📅 Calendrier</button>
+  <button class="nav-tab" onclick="showTab('valeurs',this)">🧭 Valeurs</button>
+  <button class="nav-tab" onclick="showTab('urgences',this)">🚨 Urgences</button>
+  <button class="nav-tab" onclick="showTab('journal',this)">📖 Journal</button>
+  <button class="nav-tab" onclick="showTab('theorie',this)">🧬 Théorie</button>
+</nav>
+
+<main>
+
+<!-- ══════════════════ PROGRAMME ══════════════════ -->
+<section class="tab-section active" id="tab-programme">
+
+  <!-- Phase selector -->
+  <div class="phase-selector" id="phaseSelector"></div>
+
+  <!-- Controls -->
+  <div class="controls-bar">
+    <div class="scenario-selector" id="scenarioSelector"></div>
+    <div class="level-selector" id="levelSelector">
+      <button class="lv-btn active" onclick="setLevel(1,this)" title="Niveau Découverte">⭐</button>
+      <button class="lv-btn" onclick="setLevel(2,this)" title="Niveau Pratique">⭐⭐</button>
+      <button class="lv-btn" onclick="setLevel(3,this)" title="Niveau Maîtrise">⭐⭐⭐</button>
+      <button class="lv-btn" onclick="setLevel(4,this)" title="Niveau Expert">🏆</button>
+    </div>
+  </div>
+
+  <!-- Scenario notice -->
+  <div class="sc-notice" id="scNotice"></div>
+
+  <!-- Difficulty bar -->
+  <div class="diff-bar" id="diffBar"></div>
+
+  <!-- Phase header -->
+  <div class="phase-header" id="phaseHeader"></div>
+
+  <!-- Physical exercises -->
+  <div id="physiqueSection"></div>
+
+  <!-- Schedule -->
+  <div class="section-label">Planning du jour</div>
+  <div class="schedule-list" id="scheduleList"></div>
+
+  <!-- Exercises -->
+  <div class="section-label">Exercices psychologiques</div>
+  <div class="exercises-grid" id="exercisesGrid"></div>
+
+</section>
+
+<!-- ══════════════════ CALENDRIER ══════════════════ -->
+<section class="tab-section" id="tab-calendrier">
+  <div class="cal-top">
+    <div class="cal-title">Calendrier 90 Jours</div>
+    <div class="cal-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#10b981"></div>Fait</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#ef4444"></div>Raté</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--gold)"></div>Aujourd'hui</div>
+    </div>
+  </div>
+  <div class="phases-bar">
+    <div class="pbar" style="background:var(--p1)"></div>
+    <div class="pbar" style="background:var(--p2)"></div>
+    <div class="pbar" style="background:var(--p3)"></div>
+    <div class="pbar" style="background:var(--p4)"></div>
+    <div class="pbar" style="background:var(--p5)"></div>
+    <div class="pbar" style="background:var(--p6)"></div>
+  </div>
+  <div class="cal-grid" id="calGrid"></div>
+  <div class="stats-row" id="statsRow"></div>
+</section>
+
+<!-- ══════════════════ VALEURS ══════════════════ -->
+<section class="tab-section" id="tab-valeurs">
+  <div class="section-title">Schéma des 10 Domaines de Vie</div>
+  <div class="values-wrap">
+    <div class="canvas-card">
+      <div class="val-mode">
+        <button class="vm-btn active" onclick="setValMode('importance',this)">Importance</button>
+        <button class="vm-btn" onclick="setValMode('satisfaction',this)">Satisfaction</button>
+        <button class="vm-btn" onclick="setValMode('both',this)">Les deux</button>
+      </div>
+      <canvas id="vc" width="400" height="400"></canvas>
+    </div>
+    <div class="values-controls" id="valuesControls"></div>
+  </div>
+</section>
+
+<!-- ══════════════════ URGENCES ══════════════════ -->
+<section class="tab-section" id="tab-urgences">
+  <div class="urgence-notice">⚡ Protocoles d'urgence — utilisez-les quand vous êtes en crise. Ils fonctionnent en moins de 5 minutes.</div>
+  <div class="urgence-grid" id="urgenceGrid"></div>
+</section>
+
+<!-- ══════════════════ JOURNAL ══════════════════ -->
+<section class="tab-section" id="tab-journal">
+  <div class="journal-top">
+    <div class="journal-date" id="journalDate"></div>
+    <div style="display:flex;gap:7px;">
+      <button class="btn btn-gold" onclick="saveJournalEntry()">💾 Sauvegarder</button>
+    </div>
+  </div>
+  <div class="journal-entry">
+    <div class="journal-prompts">
+      <div class="jp">
+        <label>😶 Émotions du jour</label>
+        <div class="emotion-chips" id="emoChips"></div>
+      </div>
+      <div class="jp">
+        <label>📊 Humeur générale (0–10)</label>
+        <div class="mood-row">
+          <label>Niveau :</label>
+          <input type="range" id="moodSlider" min="0" max="10" value="5" oninput="document.getElementById('moodVal').textContent=this.value">
+          <span class="mood-val" id="moodVal">5</span>
+        </div>
+      </div>
+      <div class="jp">
+        <label>🧠 Observation du Dictateur aujourd'hui</label>
+        <textarea id="jDictateur" placeholder="Quelles règles rigides ont surgi ? Comment avez-vous réagi ?"></textarea>
+      </div>
+      <div class="jp">
+        <label>🌊 Moment d'acceptation ou de résistance</label>
+        <textarea id="jAcceptation" placeholder="Y a-t-il eu un moment où vous avez accepté plutôt que combattu ?"></textarea>
+      </div>
+      <div class="jp">
+        <label>🧭 Valeur honorée aujourd'hui</label>
+        <textarea id="jValeur" placeholder="Quelle valeur avez-vous concrètement honorée ?"></textarea>
+      </div>
+      <div class="jp">
+        <label>⭐ Apprentissage du jour</label>
+        <textarea id="jApprentissage" placeholder="Qu'avez-vous appris sur vous-même aujourd'hui ?"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="past-entries" id="pastEntries"></div>
+</section>
+
+<!-- ══════════════════ THÉORIE ══════════════════ -->
+<section class="tab-section" id="tab-theorie">
+
+  <!-- Hero ACT -->
+  <div class="theorie-hero">
+    <h2>⬡ L'ACT — Acceptance and Commitment Therapy</h2>
+    <p>Développée par <strong>Steven C. Hayes</strong> (Université du Nevada) à la fin des années 1980, l'ACT est une thérapie comportementale de 3ème vague fondée sur la <strong>Relational Frame Theory (RFT)</strong>. Son objectif central n'est pas l'élimination des symptômes, mais le développement de la <strong>flexibilité psychologique</strong> : la capacité à rester en contact avec le moment présent, à accepter les expériences difficiles, et à agir conformément à ses valeurs même en présence de pensées ou d'émotions douloureuses.</p>
+    <p style="margin-top:8px">L'ACT est reconnue comme traitement validé empiriquement par l'<strong>American Psychological Association (APA)</strong> pour la dépression, les troubles anxieux, la douleur chronique, le TOC, et les troubles liés à l'usage de substances. Une méta-analyse de <strong>Levin, Krafft & Twohig (2024, PubMed)</strong> couvrant des dizaines de RCTs confirme son efficacité sur un spectre large de conditions.</p>
+    <span class="source-badge">📚 Hayes, Strosahl & Wilson (1999) — Acceptance and Commitment Therapy</span>
+    <span class="source-badge" style="margin-left:6px">📊 Levin et al., 2024 — PubMed Review</span>
+  </div>
+
+  <!-- Hexaflex -->
+  <div class="theorie-section">
+    <h3>⬡ Les 6 Pivots de l'Hexaflex</h3>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:14px">L'Hexaflex est la représentation visuelle des 6 processus interconnectés de l'ACT. Chaque pivot renforce les autres. Ensemble, ils construisent la flexibilité psychologique — l'opposé de la rigidité et de l'évitement expérientiel.</p>
+    <div class="hexaflex-grid">
+      <div class="hex-card" style="border-top-color:#06b6d4">
+        <h3 style="color:#06b6d4">🎯 Présence</h3>
+        <p>Contact avec le moment présent. Être pleinement ici, maintenant, sans filtrage par les ruminations ou l'anticipation. Contraire : pilote automatique.</p>
+        <div class="hex-ex">Ex : Méditation du corps, Marche consciente, Respiration 4-7-8</div>
+      </div>
+      <div class="hex-card" style="border-top-color:#8b5cf6">
+        <h3 style="color:#8b5cf6">🌀 Défusion</h3>
+        <p>Voir les pensées comme des pensées, pas comme des réalités. Délitéraliser le langage. Contraire : fusion cognitive (je <em>suis</em> mes pensées).</p>
+        <div class="hex-ex">Ex : Milk Milk Milk, Tribune & Défilé, Feuille sur la rivière, Sous-titres</div>
+      </div>
+      <div class="hex-card" style="border-top-color:#10b981">
+        <h3 style="color:#10b981">👁 Soi-Contexte</h3>
+        <p>Le Soi observateur — le "je" stable qui observe toutes les expériences sans s'y confondre. Contraire : attachement au Soi-contenu (je <em>suis</em> mes rôles, mes histoires).</p>
+        <div class="hex-ex">Ex : Perspective de l'observateur, Hexaflex, Méditation du soi-contexte</div>
+      </div>
+      <div class="hex-card" style="border-top-color:#f43f5e">
+        <h3 style="color:#f43f5e">🌊 Acceptation</h3>
+        <p>Accueillir activement les émotions, sensations et pensées difficiles sans les combattre. Contraire : évitement expérientiel (fuir, supprimer, engourdir).</p>
+        <div class="hex-ex">Ex : DARE, Barlow, Urge Surfing, Scan corporel avec inconfort</div>
+      </div>
+      <div class="hex-card" style="border-top-color:#e8a020">
+        <h3 style="color:#e8a020">🧭 Valeurs</h3>
+        <p>Directions de vie choisies librement. Les valeurs ne sont pas des buts à atteindre mais des qualités d'action instantiables moment par moment.</p>
+        <div class="hex-ex">Ex : Schéma 10 domaines, Clarification des valeurs, Sport de valeur</div>
+      </div>
+      <div class="hex-card" style="border-top-color:#f59e0b">
+        <h3 style="color:#f59e0b">⚡ Actions Engagées</h3>
+        <p>Agir en cohérence avec ses valeurs même en présence de difficultés. Construire des habitudes de vie larges et flexibles. Contraire : inaction, rigidité.</p>
+        <div class="hex-ex">Ex : Planification comportementale, D'Zurilla SODAS, Défi physique</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phases -->
+  <div class="theorie-section">
+    <h3>📋 Pourquoi ces 6 phases ?</h3>
+    <div class="phase-theory-card" style="border-left-color:#f43f5e">
+      <div class="pt-head"><span style="font-size:20px">⚡</span><span class="pt-name" style="color:#f43f5e">Phase 1 — Le Dictateur Intérieur</span></div>
+      <div class="pt-body">Concept issu de <strong>Russ Harris</strong> ("The Happiness Trap", 2008) et du travail de Hayes sur la fusion cognitive. Le "Dictateur Intérieur" désigne la partie de notre esprit qui émet des règles rigides du type "je dois…", "je ne dois jamais…", et qui nous juge sans relâche. En ACT, cette voix n'est pas un ennemi à éliminer mais un phénomène à <strong>observer</strong>. Cette phase ouvre la conscience de la relation problématique avec nos propres pensées — première étape de toute transformation.</div>
+      <div class="pt-pivots">
+        <span class="pivot-badge active" style="color:#06b6d4;border-color:#06b6d444">🎯 Présence</span>
+        <span class="pivot-badge active" style="color:#10b981;border-color:#10b98144">👁 Soi-Contexte</span>
+      </div>
+    </div>
+    <div class="phase-theory-card" style="border-left-color:#8b5cf6">
+      <div class="pt-head"><span style="font-size:20px">🌀</span><span class="pt-name" style="color:#8b5cf6">Phase 2 — Défusion Cognitive</span></div>
+      <div class="pt-body">La défusion est <strong>le pivot le plus difficile à comprendre mais le plus libérateur</strong>. Elle est fondée sur la RFT (Relational Frame Theory) : nos cerveaux créent des réseaux de sens à partir des mots. La défusion consiste à apprendre à voir ces réseaux pour ce qu'ils sont — des constructions verbales arbitraires — sans les confondre avec la réalité. Les techniques (Tribune, Feuille, Milk Milk Milk, Sous-titres) proviennent toutes de la littérature ACT validée empiriquement.</div>
+      <div class="pt-pivots">
+        <span class="pivot-badge active" style="color:#8b5cf6;border-color:#8b5cf644">🌀 Défusion</span>
+        <span class="pivot-badge active" style="color:#06b6d4;border-color:#06b6d444">🎯 Présence</span>
+      </div>
+    </div>
+    <div class="phase-theory-card" style="border-left-color:#06b6d4">
+      <div class="pt-head"><span style="font-size:20px">🌊</span><span class="pt-name" style="color:#06b6d4">Phase 3 — Acceptation & Exposition Barlow</span></div>
+      <div class="pt-body">L'exposition intéroceptive est une technique issue du protocole <strong>Barlow (Unified Protocol, 2011)</strong> pour les troubles émotionnels. Elle consiste à provoquer intentionnellement des sensations physiques anxiogènes (vertige, souffle coupé, cœur rapide) pour apprendre que ces sensations sont inconfortables mais <strong>non dangereuses</strong> — brisant le cycle évitement→peur. Combinée à l'acceptation ACT (DARE), elle construit une tolérance à l'inconfort profonde et durable.</div>
+      <div class="pt-pivots">
+        <span class="pivot-badge active" style="color:#f43f5e;border-color:#f43f5e44">🌊 Acceptation</span>
+        <span class="pivot-badge active" style="color:#06b6d4;border-color:#06b6d444">🎯 Présence</span>
+        <span class="pivot-badge active" style="color:#10b981;border-color:#10b98144">👁 Soi-Contexte</span>
+      </div>
+    </div>
+    <div class="phase-theory-card" style="border-left-color:#f59e0b">
+      <div class="pt-head"><span style="font-size:20px">🔧</span><span class="pt-name" style="color:#f59e0b">Phase 4 — TCC & D'Zurilla</span></div>
+      <div class="pt-body">La <strong>Thérapie Cognitive et Comportementale (TCC)</strong> d'Aaron Beck et Albert Ellis (modèle ABC) est la thérapie la plus étudiée au monde avec des milliers d'études. Elle est ici utilisée comme complément à l'ACT — non pour "corriger" les pensées (approche incompatible avec l'ACT) mais pour développer la <strong>flexibilité cognitive</strong>. La méthode SODAS de <strong>Thomas D'Zurilla</strong> (Problem-Solving Therapy, 1971) est une des approches de résolution de problèmes les mieux validées empiriquement.</div>
+      <div class="pt-pivots">
+        <span class="pivot-badge active" style="color:#f59e0b;border-color:#f59e0b44">⚡ Actions Engagées</span>
+        <span class="pivot-badge active" style="color:#e8a020;border-color:#e8a02044">🧭 Valeurs</span>
+      </div>
+    </div>
+    <div class="phase-theory-card" style="border-left-color:#10b981">
+      <div class="pt-head"><span style="font-size:20px">🧘</span><span class="pt-name" style="color:#10b981">Phase 5 — Pleine Conscience & Valeurs</span></div>
+      <div class="pt-body">La pleine conscience (mindfulness) est présente dans toutes les thérapies de 3ème vague. <strong>Jon Kabat-Zinn</strong> (MBSR, 1979) a démontré son efficacité en contexte médical, et <strong>Segal, Williams & Teasdale</strong> (MBCT, 2002) ont montré une réduction de 50% des rechutes dépressives avec 8 semaines de pratique. En ACT, la pleine conscience sert les 4 premiers pivots. Le <strong>Schéma des 10 domaines</strong> provient des travaux de Hayes sur la clarification des valeurs comme moteur de l'action engagée.</div>
+      <div class="pt-pivots">
+        <span class="pivot-badge active" style="color:#e8a020;border-color:#e8a02044">🧭 Valeurs</span>
+        <span class="pivot-badge active" style="color:#06b6d4;border-color:#06b6d444">🎯 Présence</span>
+        <span class="pivot-badge active" style="color:#10b981;border-color:#10b98144">👁 Soi-Contexte</span>
+      </div>
+    </div>
+    <div class="phase-theory-card" style="border-left-color:#e8a020">
+      <div class="pt-head"><span style="font-size:20px">🏆</span><span class="pt-name" style="color:#e8a020">Phase 6 — Intégration Totale</span></div>
+      <div class="pt-body">L'intégration est la phase où les 6 pivots de l'Hexaflex sont pratiqués de façon fluide et simultanée. Le <strong>Hexaflex Complet</strong> est le protocole d'intégration finale utilisé dans les études ACT intensives. Le <strong>Plan Anti-Rechute</strong> est fondé sur les travaux de <strong>Marlatt & Gordon (1985)</strong> sur la prévention des rechutes. La Lettre à Soi Futur est une technique d'anticipation positive validée en psychologie positive (Seligman).</div>
+      <div class="pt-pivots">
+        <span class="pivot-badge active" style="color:#06b6d4;border-color:#06b6d444">🎯 Présence</span>
+        <span class="pivot-badge active" style="color:#8b5cf6;border-color:#8b5cf644">🌀 Défusion</span>
+        <span class="pivot-badge active" style="color:#10b981;border-color:#10b98144">👁 Soi-Contexte</span>
+        <span class="pivot-badge active" style="color:#f43f5e;border-color:#f43f5e44">🌊 Acceptation</span>
+        <span class="pivot-badge active" style="color:#e8a020;border-color:#e8a02044">🧭 Valeurs</span>
+        <span class="pivot-badge active" style="color:#f59e0b;border-color:#f59e0b44">⚡ Actions</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercises theory -->
+  <div class="theorie-section">
+    <h3>🔬 Fiche Scientifique des Exercices</h3>
+
+    <div class="ex-theory-card">
+      <div class="ex-theory-head">
+        <div>
+          <div class="ex-theory-name">🌀 Défusion — Tribune & Défilé de Pensées</div>
+          <div class="ex-theory-tags">
+            <span class="ex-tag tag-pivot">Défusion</span>
+            <span class="ex-tag tag-origin">Hayes & Smith, 2005</span>
+            <span class="ex-tag tag-evidence">Validé empiriquement</span>
+          </div>
+        </div>
+      </div>
+      <div class="ex-theory-body">
+        La Tribune & Défilé est une <strong>métaphore de défusion visuelle</strong> centrale dans l'ACT. Elle repose sur le principe que nous pouvons apprendre à observer nos pensées depuis une position de "Soi-Contexte" — le "je" stable qui regarde défiler les contenus mentaux. En prenant la position de l'observateur sur la tribune, on cesse d'être emporté par le flux de pensées.
+        <div class="evidence-block">
+          <cite>Hayes, S.C., & Smith, S. (2005)</cite> — "Get Out of Your Mind and Into Your Life" (New Harbinger). Ce livre, bestseller de l'ACT grand public, formalise l'exercice de la Tribune comme technique de défusion standard. L'efficacité des techniques de défusion visuelle est supportée par les méta-analyses de <cite>Levin, Hildebrandt, Lillis & Hayes (2012)</cite>.
+        </div>
+        <div class="ex-theory-why"><strong>Pourquoi ça marche :</strong> Observer ses pensées comme des "personnages" crée une distance psychologique (defusion) qui réduit leur influence sur le comportement sans les supprimer. L'acceptation remplace la lutte.</div>
+      </div>
+    </div>
+
+    <div class="ex-theory-card">
+      <div class="ex-theory-head">
+        <div>
+          <div class="ex-theory-name">🥛 Milk Milk Milk — Délitéralisation</div>
+          <div class="ex-theory-tags">
+            <span class="ex-tag tag-pivot">Défusion</span>
+            <span class="ex-tag tag-origin">Titchener, 1916 · Masuda et al., 2004</span>
+            <span class="ex-tag tag-evidence">RCTs multiples</span>
+          </div>
+        </div>
+      </div>
+      <div class="ex-theory-body">
+        Cet exercice est l'un des <strong>plus anciens et mieux documentés</strong> de l'ACT. Il exploite le phénomène de <em>satiation sémantique</em> : la répétition rapide d'un mot brise temporairement le réseau de sens qui lui est associé. Ce phénomène a été étudié depuis plus d'un siècle.
+        <div class="evidence-block">
+          <cite>Titchener, E.B. (1916)</cite> — Premier à documenter la satiation sémantique. <cite>Masuda, Hayes, Sackett & Twohig (2004)</cite> démontrent que la technique réduit significativement la <em>croyabilité</em> ET l'inconfort associés aux pensées négatives, par rapport à la suppression et à la distraction. <cite>Barrera et al. (2016)</cite> confirment son efficacité sur l'anxiété sociale pendant une tâche de prise de parole publique.
+        </div>
+        <div class="ex-theory-why"><strong>Pourquoi ça marche :</strong> La répétition rapide désactive le réseau sémantique associé au mot. "Alcool" répété 60 fois ne déclenche plus les mêmes associations cognitives et émotionnelles — ce n't est plus qu'un bruit.</div>
+      </div>
+    </div>
+
+    <div class="ex-theory-card">
+      <div class="ex-theory-head">
+        <div>
+          <div class="ex-theory-name">🏄 Urge Surfing — Surfer les Envies</div>
+          <div class="ex-theory-tags">
+            <span class="ex-tag tag-pivot">Acceptation</span>
+            <span class="ex-tag tag-origin">Marlatt, 1980s · MBRP</span>
+            <span class="ex-tag tag-evidence">RCTs · APA validé</span>
+          </div>
+        </div>
+      </div>
+      <div class="ex-theory-body">
+        Développé par <strong>G. Alan Marlatt</strong> (Université de Washington) dans le cadre de la <em>Mindfulness-Based Relapse Prevention (MBRP)</em>. La technique est fondée sur un fait empirique crucial : <strong>les envies de consommer ne durent jamais plus de 20-30 minutes</strong> si on ne leur répond pas. La résistance active aux envies les amplifie ; l'observation neutre les laisse se dissoudre naturellement.
+        <div class="evidence-block">
+          <cite>Bowen, Chawla & Marlatt (2009, Substance Abuse)</cite> — Essai pilote MBRP : réduction significative des rechutes vs soins standard. <cite>Marlatt (2017, systematic review)</cite> — 28% d'augmentation des compétences de coping dans MBRP. Intégré à la DBT de <cite>Marsha Linehan</cite> (DBT = thérapie comportementale dialectique) sous le nom "emotion surfing".
+        </div>
+        <div class="ex-theory-why"><strong>Pourquoi ça marche :</strong> L'envie est une vague neurologique — dopamine + sensations corporelles. Elle monte (7-10 min) puis redescend naturellement si on ne la combat pas. Observer sans agir rompt le cycle déclencheur→action automatique.</div>
+      </div>
+    </div>
+
+    <div class="ex-theory-card">
+      <div class="ex-theory-head">
+        <div>
+          <div class="ex-theory-name">💨 Exposition Intéroceptive — Protocole Barlow</div>
+          <div class="ex-theory-tags">
+            <span class="ex-tag tag-pivot">Acceptation</span>
+            <span class="ex-tag tag-origin">Barlow, Unified Protocol, 2011</span>
+            <span class="ex-tag tag-evidence">Transdiagnostique</span>
+          </div>
+        </div>
+      </div>
+      <div class="ex-theory-body">
+        Le <strong>Unified Protocol de David H. Barlow</strong> (Université de Boston) est un traitement transdiagnostique pour les troubles émotionnels, validé par de nombreux RCTs. L'exposition intéroceptive consiste à provoquer intentionnellement les sensations physiques que le patient redoute (vertige, souffle coupé, palpitations), afin de briser le cycle <em>sensation anxiogène → évitement → renforcement de la peur</em>.
+        <div class="evidence-block">
+          <cite>Barlow et al. (2011)</cite> — Le Unified Protocol est efficace pour la dépression, l'anxiété généralisée, la phobie sociale, le trouble panique. <cite>Farchione et al. (2012, Behav Ther)</cite> — 73% des patients en Unified Protocol ne répondent plus aux critères diagnostiques après traitement.
+        </div>
+        <div class="ex-theory-why"><strong>Pourquoi ça marche :</strong> Les sensations physiques anxiogènes (vertige, cœur rapide) sont apprises comme dangereuses. L'exposition répétée et sécurisée réécrit cette association : la sensation perd son pouvoir d'alarme par <em>habituation</em> et <em>inhibition de la peur apprise</em>.</div>
+      </div>
+    </div>
+
+    <div class="ex-theory-card">
+      <div class="ex-theory-head">
+        <div>
+          <div class="ex-theory-name">🎯 DARE — Don't Anticipate, Run toward, Embrace</div>
+          <div class="ex-theory-tags">
+            <span class="ex-tag tag-pivot">Acceptation</span>
+            <span class="ex-tag tag-origin">Barry McDonagh, 2014</span>
+            <span class="ex-tag tag-evidence">ACT + exposition</span>
+          </div>
+        </div>
+      </div>
+      <div class="ex-theory-body">
+        Le protocole DARE de <strong>Barry McDonagh</strong> est une application pratique des principes ACT et d'exposition à l'anxiété et à la panique. Là où la plupart fuient l'anxiété, DARE propose de l'accueillir activement comme une invitée. Cette approche est cohérente avec les recherches sur le <em>paradoxe de la suppression</em> (Wegner) : résister à une pensée l'amplifie.
+        <div class="evidence-block">
+          La logique neurologique de DARE est validée par <cite>Foa & Kozak (1986)</cite> — "Emotional Processing Theory" : l'exposition doit être maintenue assez longtemps pour permettre la réduction de l'activation émotionnelle (habituation). Le principe "run toward" est la traduction pratique de l'exposition in vivo.
+        </div>
+        <div class="ex-theory-why"><strong>Pourquoi ça marche :</strong> Le système nerveux ne peut pas maintenir une réponse anxieuse indéfiniment. Courir vers l'anxiété au lieu de fuir active la réponse parasympathique (retour au calme) plus vite que la fuite, qui entretient le cycle.</div>
+      </div>
+    </div>
+
+    <div class="ex-theory-card">
+      <div class="ex-theory-head">
+        <div>
+          <div class="ex-theory-name">💡 SODAS — Résolution de Problèmes D'Zurilla</div>
+          <div class="ex-theory-tags">
+            <span class="ex-tag tag-pivot">Actions Engagées</span>
+            <span class="ex-tag tag-origin">D'Zurilla & Goldfried, 1971</span>
+            <span class="ex-tag tag-evidence">Méta-analyses positives</span>
+          </div>
+        </div>
+      </div>
+      <div class="ex-theory-body">
+        La <strong>Problem-Solving Therapy (PST)</strong> de <strong>Thomas D'Zurilla & Marvin Goldfried</strong> (1971) est l'une des interventions les plus étudiées en TCC. Elle part du principe que beaucoup de détresse psychologique vient d'une incapacité perçue à résoudre les problèmes de la vie quotidienne. L'acronyme SODAS (Stop, Options, Décider, Agir, Satisfaction) en est l'adaptation pratique en 5 étapes.
+        <div class="evidence-block">
+          <cite>Malouff, Thorsteinsson & Schutte (2007, méta-analyse)</cite> — La PST produit des effets significatifs sur la dépression, l'anxiété et la qualité de vie (d de Cohen = 0.54). <cite>Nezu (2004)</cite> confirme son efficacité dans des populations cliniques variées.
+        </div>
+        <div class="ex-theory-why"><strong>Pourquoi ça marche :</strong> Les situations de blocage créent de l'impuissance acquise. La résolution structurée en étapes active le cortex préfrontal, réduit l'activation amygdalienne et restaure le sentiment d'efficacité personnelle (Bandura).</div>
+      </div>
+    </div>
+
+    <div class="ex-theory-card">
+      <div class="ex-theory-head">
+        <div>
+          <div class="ex-theory-name">🫀 Scan Corporel (Body Scan)</div>
+          <div class="ex-theory-tags">
+            <span class="ex-tag tag-pivot">Présence</span>
+            <span class="ex-tag tag-origin">Kabat-Zinn, MBSR 1979</span>
+            <span class="ex-tag tag-evidence">Méta-analyses MBSR</span>
+          </div>
+        </div>
+      </div>
+      <div class="ex-theory-body">
+        Le scan corporel est l'exercice de pleine conscience le plus fondamental du programme <strong>MBSR (Mindfulness-Based Stress Reduction)</strong> de <strong>Jon Kabat-Zinn</strong> (Université du Massachusetts, 1979). Il consiste à balayer le corps avec une attention bienveillante, observant les sensations sans les modifier.
+        <div class="evidence-block">
+          <cite>Grossman et al. (2004, méta-analyse, J Psychosom Research)</cite> — 8 semaines de MBSR réduisent significativement le stress, l'anxiété et la dépression. <cite>Segal, Williams & Teasdale (2002)</cite> — MBCT (incluant le scan corporel) réduit les rechutes dépressives de 50% chez les patients avec ≥3 épisodes.
+        </div>
+        <div class="ex-theory-why"><strong>Pourquoi ça marche :</strong> Le scan corporel développe l'intéroception — la conscience des signaux corporels internes. Cela active le cortex insulaire et réduit la réactivité de l'amygdale aux stimuli émotionnels négatifs (neuro-imagerie fMRI).</div>
+      </div>
+    </div>
+
+    <div class="ex-theory-card">
+      <div class="ex-theory-head">
+        <div>
+          <div class="ex-theory-name">🧭 Schéma des 10 Domaines de Valeurs</div>
+          <div class="ex-theory-tags">
+            <span class="ex-tag tag-pivot">Valeurs</span>
+            <span class="ex-tag tag-origin">Hayes, 1999 · Russ Harris, 2008</span>
+            <span class="ex-tag tag-evidence">Médiateur de changement ACT</span>
+          </div>
+        </div>
+      </div>
+      <div class="ex-theory-body">
+        La clarification des valeurs est un des piliers de l'ACT. Les valeurs, dans le cadre de l'ACT, ne sont pas des buts mais des <strong>directions de vie</strong> — comme des étoiles polaires qui guident l'action sans jamais être "atteintes". Le schéma des 10 domaines (famille, couple, santé, travail, loisirs, formation, spiritualité, amitié, citoyenneté, finances) est l'outil de clarification standard.
+        <div class="evidence-block">
+          <cite>Dahl et al. (2009)</cite> — Les changements dans les valeurs et l'action engagée médiatisent significativement les résultats ACT. <cite>Wilson, Sandoz & Kitchens (2010, JCBS)</cite> — La clarté des valeurs prédit l'engagement comportemental et la qualité de vie indépendamment de la réduction des symptômes.
+        </div>
+        <div class="ex-theory-why"><strong>Pourquoi ça marche :</strong> L'acte de nommer et cartographier ses valeurs active la motivation intrinsèque (vs externe). Cela crée une boussole interne qui persiste même quand les symptômes sont présents — clé de l'engagement durable.</div>
+      </div>
+    </div>
+
+    <div class="ex-theory-card">
+      <div class="ex-theory-head">
+        <div>
+          <div class="ex-theory-name">💪 Exercice Physique comme Outil ACT</div>
+          <div class="ex-theory-tags">
+            <span class="ex-tag tag-pivot">Actions Engagées</span>
+            <span class="ex-tag tag-origin">Recherche exercise-mood</span>
+            <span class="ex-tag tag-evidence">Méta-analyses solides</span>
+          </div>
+        </div>
+      </div>
+      <div class="ex-theory-body">
+        L'exercice physique est intégré au programme à chaque phase car son efficacité psychologique est l'une des mieux documentées en médecine. Chaque phase l'associe à son pivot dominant : <strong>Jacobson pour la Présence corporelle</strong>, <strong>course consciente pour la Défusion</strong>, <strong>Barlow pour l'Acceptation</strong>, <strong>sport de valeur pour les Valeurs & Actions</strong>.
+        <div class="evidence-block">
+          <cite>Schuch et al. (2018, méta-analyse JAMA Psychiatry, 1 million de personnes)</cite> — Activité physique régulière réduit le risque de dépression de 28%. <cite>Blumenthal et al. (1999, Arch Internal Med)</cite> — 30 min d'exercice 3×/semaine aussi efficace que les antidépresseurs (sertralline) pour la dépression légère à modérée. La <strong>Relaxation Musculaire Progressive de Jacobson (1938)</strong> est validée pour l'anxiété générale depuis plus de 80 ans d'études.
+        </div>
+        <div class="ex-theory-why"><strong>Pourquoi ça marche :</strong> L'exercice libère BDNF (facteur neurotrophique), sérotonine, dopamine et endorphines. Il réduit le cortisol chronique et augmente l'épaisseur du cortex préfrontal — exactement la zone impliquée dans la régulation émotionnelle et la prise de décision.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Lectures -->
+  <div class="theorie-section">
+    <h3>📚 Références & Lectures Recommandées</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px">The Happiness Trap</div>
+        <div style="font-size:12px;color:var(--text2)">Russ Harris — L'introduction ACT la plus accessible. Traduit en français.</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">⭐ Recommandé en priorité</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px">Get Out of Your Mind and Into Your Life</div>
+        <div style="font-size:12px;color:var(--text2)">Steven C. Hayes — Le fondateur de l'ACT. Exercices pratiques complets.</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">📖 Référence fondatrice</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px">DARE — The New Way to End Anxiety</div>
+        <div style="font-size:12px;color:var(--text2)">Barry McDonagh — Protocole pratique pour l'anxiété et la panique.</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">🎯 Pour la phase 3</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px">Full Catastrophe Living</div>
+        <div style="font-size:12px;color:var(--text2)">Jon Kabat-Zinn — Le MBSR original. Pleine conscience en profondeur.</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">🧘 Pour la phase 5</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- TIMER MODAL -->
+<div class="modal-ov" id="timerModal">
+  <div class="timer-modal">
+    <button class="modal-close" onclick="closeTimer()">✕</button>
+    <div class="timer-lbl" id="timerExLbl">Minuteur</div>
+    <div class="timer-circle">
+      <svg width="150" height="150" viewBox="0 0 150 150">
+        <circle cx="75" cy="75" r="65" fill="none" stroke="var(--card2)" stroke-width="8"/>
+        <circle id="timerArc" cx="75" cy="75" r="65" fill="none" stroke="var(--gold)" stroke-width="8"
+          stroke-dasharray="408.41" stroke-dashoffset="0" stroke-linecap="round"/>
+      </svg>
+      <div class="timer-circle-txt" id="timerDisplay">00:00</div>
+    </div>
+    <div class="timer-presets">
+      <button class="tp" onclick="setTimerPreset(5)">5 min</button>
+      <button class="tp" onclick="setTimerPreset(10)">10 min</button>
+      <button class="tp" onclick="setTimerPreset(15)">15 min</button>
+      <button class="tp" onclick="setTimerPreset(20)">20 min</button>
+      <button class="tp" onclick="setTimerPreset(25)">25 min</button>
+      <button class="tp" onclick="setTimerPreset(0)">Chrono ↑</button>
+    </div>
+    <div class="timer-btns">
+      <button class="btn btn-gold" id="timerStartBtn" onclick="toggleTimer()">▶ Démarrer</button>
+      <button class="btn" onclick="resetTimer()">↺ Reset</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════
+// DATA
+// ══════════════════════════════════════
+const START_DATE = new Date('2026-05-10T00:00:00');
+
+// Les 6 pivots ACT (Hexaflex)
+const ACT_PIVOTS = [
+  {id:"presence",  name:"Présence",         icon:"🎯", color:"#06b6d4"},
+  {id:"defusion",  name:"Défusion",          icon:"🌀", color:"#8b5cf6"},
+  {id:"soi",       name:"Soi-Contexte",      icon:"👁️", color:"#10b981"},
+  {id:"acceptation",name:"Acceptation",      icon:"🌊", color:"#f43f5e"},
+  {id:"valeurs",   name:"Valeurs",           icon:"🧭", color:"#e8a020"},
+  {id:"actions",   name:"Actions Engagées",  icon:"⚡", color:"#f59e0b"}
+];
+
+// Exercices physiques par phase et par niveau
+const PHYSIQUE = {
+  1:{
+    label:"Relaxation Musculaire Progressive (Jacobson)",
+    levels:{
+      1:{dur:"15 min",intensity:"🟢 Légère",desc:"<strong>Jacobson débutant</strong> — Contractez puis relâchez chaque groupe musculaire. Idéal allongé ou assis.",
+         steps:["Fermez les yeux, inspirez profondément 3 fois","Pieds : contractez 7s → relâchez 20s. Observez la différence","Mollets → Cuisses → Fessiers → Abdomen","Mains → Avant-bras → Biceps → Épaules","Visage : plissez tout 7s → relâchez","Balayez le corps : où est encore la tension ?","Notez : <em>où le Dictateur habite-t-il dans votre corps ?</em>"]},
+      2:{dur:"20 min",intensity:"🟡 Modérée",desc:"<strong>Jacobson complet + marche 10 min</strong> — Ajoutez une marche consciente après la relaxation.",
+         steps:["Jacobson complet (15 min) — tous les groupes musculaires","Après : marche 10 min en observant les tensions résiduelles","À chaque pas : quelle règle du Dictateur sent-on dans le corps ?","Notez la zone corporelle la plus souvent contractée"]},
+      3:{dur:"30 min",intensity:"🟠 Intense",desc:"<strong>Jacobson + jogging 20 min + scan post-effort</strong>",
+         steps:["Jacobson 10 min (focus zones de tension chronique)","Jogging 20 min — maintenez une présence corporelle constante","Arrêtez : scan corporel immédiat (où est la chaleur, l'effort ?)","Comparez la tension physique avant/après l'effort"]},
+      4:{dur:"45 min",intensity:"🔴 Expert",desc:"<strong>Yoga musculaire ou course 40 min + journal corporel</strong>",
+         steps:["Session yoga dynamique OU course 40 min en conscience totale","Chaque mouvement : quelles pensées du Dictateur surgissent ?","Post-effort : journal corporel (10 min) — carte des sensations","Question : où stockez-vous les règles rigides dans votre corps ?"]}
+    }
+  },
+  2:{
+    label:"Course Consciente — Défusion en mouvement",
+    levels:{
+      1:{dur:"15 min",intensity:"🟢 Légère",desc:"<strong>Marche rapide + sous-titres actifs</strong> — Pratiquez la défusion pendant le mouvement.",
+         steps:["Marche rapide 15 min","À chaque pensée qui surgit : imaginez-la en sous-titre de film","'Mon cerveau dit : je suis nul' — vous voyez le sous-titre, pas le film","Nommez 5 personnages du Défilé pendant la marche","Observez : le mouvement facilite-t-il la défusion ?"]},
+      2:{dur:"25 min",intensity:"🟡 Modérée",desc:"<strong>Course 20 min + Urge Surfing pendant l'effort</strong>",
+         steps:["Échauffement 5 min (marche rapide)","Course 20 min — observez l'envie de ralentir/arrêter","Appliquez l'Urge Surfing sur cette envie : montée → pic → descente","Milk Milk Milk mental : répétez 'fatigue' jusqu'à délitéralisation","Récup 5 min : qu'avez-vous appris sur vos envies ?"]},
+      3:{dur:"35 min",intensity:"🟠 Intense",desc:"<strong>HIIT 20 min + Tribune & Défilé post-effort</strong>",
+         steps:["HIIT : 30s sprint / 30s marche × 20 répétitions","Post-effort (15 min) : Tribune & Défilé en état de fatigue physique","Les pensées sont-elles différentes après l'effort intense ?","Urge Surfing sur la fatigue : observez-la comme une vague","Milk Milk Milk : 'épuisé' — délitéralisez la résistance"]},
+      4:{dur:"50 min",intensity:"🔴 Expert",desc:"<strong>Course longue 45 min + défusion continue</strong>",
+         steps:["Course longue 45 min — défusion permanente (sous-titres tout le long)","Règle : chaque pensée négative = sous-titre immédiat","Urge Surfing sur la douleur physique de l'effort","Post-course : bilan — combien de pensées défusées ?"]}
+    }
+  },
+  3:{
+    label:"Exposition Intéroceptive + Douche Froide (Barlow)",
+    levels:{
+      1:{dur:"10 min",intensity:"🟢 Légère",desc:"<strong>Exposition Barlow niveau 1</strong> — Respiration paille + course sur place.",
+         steps:["Course sur place 2 min — tolérez l'accélération cardiaque","Arrêtez : restez immobile, observez la régulation naturelle","Respiration paille 2 min — tolérez la sensation de manque d'air","Récup : respirez normalement, notez le soulagement","Question : avez-vous survécu ? Toujours oui."]},
+      2:{dur:"20 min",intensity:"🟡 Modérée",desc:"<strong>Barlow complet + douche froide 30 secondes</strong>",
+         steps:["Hyperventilation 90s → observez vertige sans fuir","Rotation chaise 60s → observez désorientation","Course sur place 2 min → observez cœur rapide","Respiration paille 2 min → observez inconfort","Douche froide 30s : eau froide directe. Restez. N'esquivez pas.","Acceptation active : 'C'est inconfortable, pas dangereux.'"]},
+      3:{dur:"30 min",intensity:"🟠 Intense",desc:"<strong>Barlow intégral + douche froide 1 min + yoga de sol</strong>",
+         steps:["Barlow complet (5 exercices, 2 rounds chacun)","Douche froide 1 minute — acceptation totale du froid","Yoga de sol 10 min : positions inconfortables, restez avec la sensation","Chaque exercice : DARE (Don't Anticipate, Run toward, Embrace)","Bilan : corps et esprit — qu'avez-vous toléré aujourd'hui ?"]},
+      4:{dur:"45 min",intensity:"🔴 Expert",desc:"<strong>Protocole Barlow intensif + défi d'exposition personnalisé</strong>",
+         steps:["Barlow complet (3 rounds chacun)","Douche froide 2 minutes — silence total pendant","Défi personnel : exposition à votre peur corporelle principale","Running en chaleur ou activité physique dans l'inconfort","Journal d'exposition post-effort (15 min)"]}
+    }
+  },
+  4:{
+    label:"Sport de Résolution — Corps calme, esprit clair",
+    levels:{
+      1:{dur:"20 min",intensity:"🟢 Légère",desc:"<strong>Marche de résolution</strong> — Marchez en réfléchissant au problème du jour.",
+         steps:["Identifiez d'abord le problème (S de SODAS)","Marche 20 min — laissez le mouvement ouvrir l'esprit aux options","À mi-parcours : notez mentalement 3 solutions possibles","Retour : choisissez la meilleure et planifiez une première action","Le corps en mouvement facilite la pensée latérale"]},
+      2:{dur:"30 min",intensity:"🟡 Modérée",desc:"<strong>Musculation 20 min + SODAS post-effort</strong>",
+         steps:["Pompes 3×15 + Squats 3×20 + Planche 3×45s","Après l'effort : corps calme, cortisol régulé","SODAS complet (20 min) : le corps calme facilite la décision","Observation : vos solutions sont-elles différentes post-effort ?"]},
+      3:{dur:"40 min",intensity:"🟠 Intense",desc:"<strong>HIIT 25 min + planification comportementale</strong>",
+         steps:["HIIT 25 min (30s max / 30s repos × 25 tours)","Stretch 5 min — descendez le rythme intentionnellement","Planification comportementale 10 min : activité valorisée du lendemain","ABC Ellis 10 min : analysez une croyance activée pendant l'effort"]},
+      4:{dur:"55 min",intensity:"🔴 Expert",desc:"<strong>Sport haute intensité 45 min + bilan TCC complet</strong>",
+         steps:["Sport au choix haute intensité — 45 minutes","Pendant l'effort : observez les croyances irrationnelles qui surgissent","Post-effort (10 min) : ABC Ellis sur les pensées de l'effort","Restructuration cognitive : quelle pensée alternative émergente ?"]}
+    }
+  },
+  5:{
+    label:"Sport de Valeur — Agir en accord avec ce qui compte",
+    levels:{
+      1:{dur:"20 min",intensity:"🟢 Légère",desc:"<strong>Yoga douceur + marche consciente</strong> — Pratiquez un sport qui honore une valeur.",
+         steps:["Choisissez une valeur à honorer aujourd'hui (ex: santé, famille)","Yoga 10 min ou marche consciente 20 min","À chaque mouvement : reliez l'effort à votre valeur choisie","Après : notez comment cette activité honore votre valeur","C'est une action engagée concrète"]},
+      2:{dur:"35 min",intensity:"🟡 Modérée",desc:"<strong>Sport social + marche consciente longue</strong>",
+         steps:["Activité avec valeur sociale : foot/basket avec amis = valeur Amitié","OU jogging 30 min en pleine conscience totale","Pendant : 3 valeurs à l'esprit — lesquelles cet effort honore-t-il ?","Marche consciente retour 10 min : notez ce qui s'est ouvert"]},
+      3:{dur:"50 min",intensity:"🟠 Intense",desc:"<strong>Sport de valeur intense 45 min + bilan valeurs</strong>",
+         steps:["Activité intense qui honore directement une valeur importante","Ex: course = santé. Foot avec fils/ami = famille. Natation = liberté","Pendant l'effort : 'Je fais ça parce que je tiens à X'","Post-effort : clarification des valeurs (10 min) — impact de l'action","Une action vaut 100 affirmations"]},
+      4:{dur:"70 min",intensity:"🔴 Expert",desc:"<strong>Défi sportif symbolique lié aux valeurs</strong>",
+         steps:["Défi sportif personnel : 10km, randonnée difficile, objectif personnel","Avant : clarifiez la valeur que ce défi symbolise","Pendant : pleine conscience totale, présence complète","Après : journal des 10 domaines — impact de ce défi sur chaque domaine","Ce défi EST une action engagée majeure"]}
+    }
+  },
+  6:{
+    label:"Défi Physique d'Intégration — Le Corps comme Engagement",
+    levels:{
+      1:{dur:"30 min",intensity:"🟢 Légère",desc:"<strong>Routine intégration corps-esprit</strong>",
+         steps:["Yoga 15 min (connecter corps et présence)","Marche consciente 15 min (valeurs en mouvement)","À chaque pas : quel engagement prenez-vous ?","Hexaflex incarné : les 6 pivots dans le corps"]},
+      2:{dur:"45 min",intensity:"🟡 Modérée",desc:"<strong>Programme personnel intégré</strong>",
+         steps:["Sport au choix 45 min — incorporez tous les outils ACT","Défusion pendant l'effort, acceptation de la douleur, valeurs en mouvement","Post-effort : journal intégration (15 min)"]},
+      3:{dur:"60 min",intensity:"🟠 Intense",desc:"<strong>Défi physique symbolique — 5km ou équivalent</strong>",
+         steps:["Course 5km ou défi physique équivalent","Chaque kilomètre = un pivot ACT à pratiquer mentalement","Km1: Présence | Km2: Défusion | Km3: Soi | Km4: Acceptation | Km5: Valeurs","Arrivée : action engagée — célébrez cette intégration"]},
+      4:{dur:"90 min",intensity:"🔴 Expert",desc:"<strong>Grand défi personnel — Expression physique de votre transformation</strong>",
+         steps:["10km, randonnée, semi-marathon, ou défi personnel majeur","Ce défi symbolise vos 90 jours de transformation","Pendant : Hexaflex complet en conscience","Après : Lettre à soi futur basée sur cette expérience corporelle"]}
+    }
+  }
+};
+
+const PHASES = [
+{id:1,name:"Le Dictateur Intérieur",sub:"Observer la voix critique",weeks:[1,2],days:[1,14],color:"#f43f5e",icon:"⚡",label:"Dictateur",
+pivots:["presence","soi"],
+desc:"Identifier, nommer et observer le Dictateur Intérieur sans lui obéir. Prendre conscience de ses règles rigides et de leur coût.",
+exercises:[
+{id:"p1e1",name:"Cartographie du Dictateur",dur:15,ico:"🗺️",
+instr:"Listez toutes les règles que le Dictateur vous impose. Commencez par 'Je dois…', 'Il faut que…', 'Je ne dois jamais…'. Observez leur rigidité sans les juger.",
+levels:{1:"Listez 5 règles. Notez d'où elles viennent.",2:"Listez 10 règles. Évaluez leur rigidité 1-10.",3:"15 règles + analysez coût émotionnel de chacune.",4:"Cartographie complète + arbre généalogique des règles (d'où vient chaque règle ?)"},
+steps:["Prenez les notes ci-dessous ou une feuille","Écrivez 10 règles du Dictateur","Notez la rigidité de chaque règle (1-10)","D'où vient chaque règle ? (enfance, peur, culture…)"]},
+{id:"p1e2",name:"Journal de Pensées Automatiques",dur:10,ico:"📖",
+instr:"Situation → Pensée automatique → Émotion → Comportement. Observez la chaîne sans juger.",
+levels:{1:"1 situation, 4 colonnes basiques.",2:"2 situations. Identifiez le type de distorsion cognitive.",3:"3 situations + intensité émotionnelle 0-100 avant/après.",4:"5 situations + restructuration ABC complète sur chacune."},
+steps:["Rappelez un moment difficile d'aujourd'hui","Quelle situation s'est passée ? (neutre, factuel)","Quelle pensée a surgi automatiquement ?","Quelle émotion cette pensée a déclenchée ?","Comment avez-vous réagi ?"]},
+{id:"p1e3",name:"Le Procès du Dictateur",dur:20,ico:"⚖️",
+instr:"Mettez le Dictateur sur le banc des accusés. Examinez ses preuves comme un avocat — et trouvez les contre-preuves.",
+levels:{1:"1 règle, 2 preuves contre.",2:"1 règle, procès complet + règle alternative.",3:"2 règles + appel du jugement (revue critique de votre propre verdict).",4:"3 règles + simulation d'avocat de la défense ET de l'accusation."},
+steps:["Choisissez la règle la plus pénalisante","Listez les 'preuves' que le Dictateur invoque","Trouvez 3 contre-preuves ou exceptions concrètes","Formulez une règle plus flexible et réaliste","Prononcez le verdict : coupable ou relaxé ?"]},
+{id:"p1e4",name:"Lettre au Dictateur",dur:15,ico:"✉️",
+instr:"Écrivez une lettre directe à votre Dictateur. Dites-lui ce qu'il vous a coûté — et ce que vous décidez maintenant.",
+levels:{1:"Lettre courte : 3 paragraphes.",2:"Lettre complète avec historique et déclaration.",3:"Lettre + réponse imaginée du Dictateur + votre contre-réponse.",4:"Dialogue complet + vœu d'intégration (le Dictateur comme gardien transformé)."},
+steps:["Commencez par 'Cher Dictateur…'","Exprimez comment il vous a affecté","Reconnaissez son intention (même si maladroite)","Affirmez votre nouvelle position face à lui","Terminez par une déclaration d'indépendance"]}
+]},
+{id:2,name:"Défusion Cognitive",sub:"Prendre du recul sur les pensées",weeks:[3,4],days:[15,28],color:"#8b5cf6",icon:"🌀",label:"Défusion",
+pivots:["defusion","presence"],
+desc:"Voir les pensées comme des mots, pas comme des réalités. Techniques de délitéralisation de Hayes pour briser la fusion cognitive.",
+exercises:[
+{id:"p2e1",name:"Tribune & Défilé",dur:15,ico:"🎭",
+instr:"Imaginez vos pensées comme des personnages qui défilent devant une tribune où vous êtes assis. Observez-les passer sans les suivre.",
+levels:{1:"5 min de défilé, 3-5 personnages nommés.",2:"10 min, nommez et décrivez chaque personnage visuellement.",3:"15 min, écrivez le script complet du défilé. Détails physiques de chaque personnage.",4:"20 min + variante : vous êtes dans le public ET sur la tribune. Deux perspectives."},
+steps:["Installez-vous confortablement, fermez les yeux","Imaginez une grande place — vous êtes assis sur une tribune","Laissez vos pensées arriver comme des personnages qui défilent","Observez chaque personnage sans vous lever pour le suivre","Nommez : 'Ah, voilà le personnage Inutile…' 'Voilà Raté…'","Si emporté, revenez calmement à la tribune"]},
+{id:"p2e2",name:"Milk Milk Milk",dur:10,ico:"🥛",
+instr:"Répétez un mot chargé émotionnellement jusqu'à ce qu'il perde son sens. Technique de délitéralisation de Hayes.",
+levels:{1:"1 mot, 30 secondes de répétition.",2:"2 mots différents, 45 secondes chacun.",3:"3 mots dont 'alcool'. Notez l'intensité avant (0-10) et après (0-10).",4:"5 mots + variante écrite (écrire le mot 100 fois). Quel mot résiste le plus ?"},
+steps:["Choisissez un mot chargé ('raté', 'nul', 'alcool', 'honte')","Dites-le normalement — notez ce que vous ressentez","Répétez ce mot TRÈS VITE pendant 45 secondes","Observez comment le mot perd son pouvoir émotionnel","Il devient juste un son sans signification","Notez ce que vous observez après l'exercice"]},
+{id:"p2e3",name:"Urge Surfing",dur:20,ico:"🏄",
+instr:"Surfez la vague de l'envie sans céder. L'envie monte, atteint un pic, puis redescend — sans que vous ayez à sauter dedans.",
+levels:{1:"Surfez une envie légère (café, téléphone). Décrivez la vague.",2:"Envie modérée. Chronométrez la montée et la descente.",3:"Envie forte (alcool, évitement). Tracez la courbe de l'envie sur papier.",4:"Exposition volontaire au déclencheur tout en surfant. 30 min de protocole."},
+steps:["Quand une envie surgit : STOP — ne réagissez pas encore","Nommez : 'Je remarque une envie de…'","Localisez-la dans votre corps : où la sentez-vous ?","Caractéristiques : intensité, texture, chaleur, mouvement ?","Suivez la montée de la vague sans fuir ni céder","Observez le pic — puis la descente naturelle","Notez : l'envie a-t-elle disparu sans que vous cédez ?"]},
+{id:"p2e4",name:"Feuille sur la rivière",dur:10,ico:"🍂",
+instr:"Posez chaque pensée sur une feuille qui flotte sur la rivière. Regardez-la partir sans la retenir ni la repousser.",
+levels:{1:"5 min, 3-5 feuilles.",2:"10 min. Notez les pensées qui résistent à partir.",3:"10 min + variante : nuages dans le ciel. Quelle métaphore fonctionne mieux pour vous ?",4:"15 min + créez votre propre métaphore de défusion personnalisée."},
+steps:["Fermez les yeux, imaginez une rivière paisible","Laissez les feuilles tomber sur l'eau naturellement","Quand une pensée arrive, posez-la sur une feuille","Regardez la feuille s'éloigner doucement","Si emporté par la pensée, revenez à la rivière","Pas de jugement — être emporté est normal"]},
+{id:"p2e5",name:"Pensées en sous-titres",dur:5,ico:"🎬",
+instr:"Toute la journée : imaginez vos pensées comme des sous-titres de film qui défilent. Vous les voyez mais ne les confondez pas avec la réalité.",
+levels:{1:"Pratiquez 30 min dans la journée.",2:"Pratiquez toute la matinée. Comptez les sous-titres.",3:"Toute la journée. Identifiez les 3 sous-titres les plus fréquents.",4:"Toute la journée + variante : voix off de documentaire sur vous-même."},
+steps:["Quand une pensée surgit, imaginez-la en sous-titre de film","Sous-titre : 'Mon cerveau dit : je suis nul'","Vous voyez le sous-titre mais regardez le film de votre vie","Les sous-titres ne contrôlent pas le film","Exercice à pratiquer tout au long de la journée"]}
+]},
+{id:3,name:"Acceptation & Exposition",sub:"Barlow — Tolérer l'inconfort",weeks:[5,6],days:[29,42],color:"#06b6d4",icon:"🌊",label:"Barlow",
+pivots:["acceptation","presence","soi"],
+desc:"Accepter l'inconfort sans fuir. Exposition intéroceptive de Barlow pour apprivoiser les sensations anxieuses et briser le cycle évitement–peur.",
+exercises:[
+{id:"p3e1",name:"Hyperventilation contrôlée",dur:5,ico:"💨",
+instr:"Barlow : hyperventiler volontairement pour apprivoiser vertige et panique. ⚠️ Contre-indiqué si problème cardiaque ou épilepsie.",
+levels:{1:"60 secondes. Observez. Notez les sensations.",2:"90 secondes × 2 rounds. Intensité 0-10 à chaque fois.",3:"90 secondes × 3 rounds avec DARE entre chaque (Don't Anticipate, Accept, Run, Embrace).",4:"2 minutes × 4 rounds. Journalisez chaque sensation avec précision anatomique."},
+steps:["Position assise stable — espace dégagé","Respirez très vite et très profondément pendant 60-90 sec","Observez : vertige, fourmillements, légèreté, dissociation","NE FUYEZ PAS — restez avec les sensations","Elles sont inconfortables mais PAS dangereuses","Laissez-les diminuer naturellement (2-5 min)","Bilan : les sensations ont disparu sans catastrophe"]},
+{id:"p3e2",name:"Rotation en chaise",dur:3,ico:"🔄",
+instr:"Provoquer et tolérer vertiges et déséquilibre. Chaise pivotante, espace libre.",
+levels:{1:"30 secondes, 1 round.",2:"60 secondes × 2 rounds.",3:"60 secondes × 3 rounds. Restez debout après — acceptez le déséquilibre.",4:"60 secondes × 4 rounds + debout immédiatement + marcher en ligne droite."},
+steps:["Assis sur une chaise pivotante, espace libre","Tournez rapidement pendant 60 secondes","Arrêtez — observez le vertige et la désorientation","Restez immobile, acceptez les sensations","Attendez qu'elles disparaissent naturellement"]},
+{id:"p3e3",name:"Respiration paille",dur:5,ico:"🩹",
+instr:"Respirer uniquement par une paille pour apprivoiser la sensation d'étouffement.",
+levels:{1:"1 minute, paille large.",2:"2 minutes, paille standard.",3:"2 minutes × 2, paille fine. DARE entre chaque.",4:"3 minutes, paille fine. Notez intensité secondes par secondes les 3 premières fois."},
+steps:["Prenez une paille (ou pincez les narines)","Respirez uniquement par la paille pendant 2 minutes","Observez la sensation de manque d'air","Ne retirez pas la paille — restez avec la sensation","Rappelez-vous : vous avez assez d'air, c'est inconfortable pas dangereux","Après 2 min : respirez normalement, observez le soulagement"]},
+{id:"p3e4",name:"Course sur place",dur:3,ico:"🏃",
+instr:"Provoquer une accélération cardiaque et tolérer ces sensations physiques.",
+levels:{1:"90 secondes course modérée.",2:"2 minutes course intense.",3:"2 minutes × 2 rounds. DARE entre chaque round.",4:"3 minutes × 3 rounds. Restez immobile entre — observez la régulation complète."},
+steps:["Courez sur place intensément pendant 2 minutes","Observez : cœur rapide, chaleur, essoufflement","Arrêtez et restez immobile — observez sans intervenir","Le cœur ralentit naturellement — notez cette régulation","Vous pouvez tolérer un cœur qui bat vite"]},
+{id:"p3e5",name:"DARE — Plonger dans l'émotion",dur:15,ico:"🎯",
+instr:"Don't Anticipate, Run toward, Embrace. Courir vers l'émotion au lieu de la fuir.",
+levels:{1:"1 émotion légère. 10 min.",2:"1 émotion modérée. 15 min. Notez les changements physiques.",3:"1 émotion difficile. 15 min + journalisation post-DARE.",4:"2 émotions difficiles + exposition volontaire au déclencheur pendant l'exercice."},
+steps:["D — Don't Anticipate : identifiez l'émotion difficile présente","A — Accept & Allow : acceptez sa présence sans la combattre","R — Run toward : approchez-vous de l'émotion intentionnellement","E — Embrace : accueillez-la comme une invitée inconfortable","Question : qu'est-ce que cette émotion a à m'apprendre ?","Restez avec elle jusqu'à ce qu'elle évolue naturellement"]}
+]},
+{id:4,name:"TCC & Résolution de Problèmes",sub:"D'Zurilla — SODAS",weeks:[7,8],days:[43,56],color:"#f59e0b",icon:"🔧",label:"D'Zurilla",
+pivots:["actions","valeurs"],
+desc:"Restructuration cognitive (Ellis ABC) et résolution de problèmes avec la méthode SODAS de D'Zurilla. Passer de la réactivité à l'action structurée.",
+exercises:[
+{id:"p4e1",name:"ABC Ellis — Analyse",dur:15,ico:"🔍",
+instr:"A (Événement) → B (Croyance) → C (Conséquence). Puis D (Dispute) → E (Effet nouveau). Modèle fondateur de la TCC.",
+levels:{1:"Remplissez A-B-C sur 1 situation.",2:"A-B-C-D-E complet sur 1 situation.",3:"A-B-C-D-E sur 2 situations + classez les croyances (absolues vs préférentielles).",4:"3 situations + méta-analyse : quelle croyance irrationnelle centrale domine ?"},
+steps:["A — Activateur : décrivez la situation de façon neutre et factuelle","B — Croyance : quelle croyance automatique est activée ?","C — Conséquence : quelle émotion / comportement en résulte ?","D — Dispute : est-cette croyance prouvée ? utile ? réaliste ?","E — Effet : formulez une croyance plus flexible et aidante"]},
+{id:"p4e2",name:"Restructuration Cognitive",dur:20,ico:"🧩",
+instr:"Identifier les distorsions cognitives et les remplacer par des pensées alternatives plus équilibrées.",
+levels:{1:"Identifiez 1 distorsion, proposez 1 alternative.",2:"2 distorsions. Nommez-les précisément (tout-ou-rien, catastrophisation…).",3:"3 distorsions + intensité émotionnelle 0-100 avant/après restructuration.",4:"5 distorsions + plan de vigilance : comment les repérer rapidement à l'avenir ?"},
+steps:["Identifiez la pensée automatique négative","Cherchez la distorsion : tout-ou-rien, catastrophisation, lecture de pensée…","Rassemblez les preuves POUR cette pensée","Rassemblez les preuves CONTRE cette pensée","Formulez une pensée alternative équilibrée (ni naïve ni sombre)","Notez l'impact émotionnel de la pensée alternative"]},
+{id:"p4e3",name:"SODAS — D'Zurilla",dur:25,ico:"💡",
+instr:"Méthode de résolution de problèmes en 5 étapes : Stop, Options, Décider, Agir, Satisfaction.",
+levels:{1:"Problème simple. Générez 3 options minimum.",2:"Problème modéré. Générez 5 options + tableau pros/cons.",3:"Problème complexe. 7+ options + critères de décision pondérés.",4:"Problème majeur + simulation mentale du résultat de chaque option avant décision."},
+steps:["S — STOP : définissez le problème précisément. Quelle est la vraie difficulté ?","O — OPTIONS : générez TOUTES les solutions possibles. Brainstorming libre, sans jugement","D — DÉCIDER : évaluez chaque option (pros/cons, faisabilité, valeurs)","A — AGIR : mettez en œuvre la meilleure solution avec un plan concret","S — SATISFACTION : évaluez le résultat. Qu'avez-vous appris ?"]},
+{id:"p4e4",name:"Planification Comportementale",dur:15,ico:"📅",
+instr:"Planifier des activités porteuses de sens pour sortir de l'évitement comportemental.",
+levels:{1:"1 activité planifiée, humeur avant/après.",2:"3 activités planifiées sur la semaine. Lien avec les valeurs.",3:"5 activités + hiérarchie d'évitement (de la moins à la plus évitée).",4:"Programme hebdomadaire complet + activation comportementale progressive sur 2 semaines."},
+steps:["Listez 5 activités qui apportaient du plaisir ou du sens","Évaluez votre niveau d'évitement actuel de chacune (0-10)","Choisissez l'activité la moins évitée","Planifiez-la concrètement : quand, où, comment","Notez votre humeur avant et après l'activité"]}
+]},
+{id:5,name:"Pleine Conscience & Valeurs",sub:"Schéma des 10 domaines",weeks:[9,10],days:[57,70],color:"#10b981",icon:"🧘",label:"Valeurs",
+pivots:["valeurs","presence","soi"],
+desc:"Méditation de pleine conscience et clarification des valeurs via le schéma des 10 domaines. Ancrer les engagements dans la vie concrète.",
+exercises:[
+{id:"p5e1",name:"Méditation du Corps",dur:20,ico:"🫀",
+instr:"Scan corporel progressif. Parcourez votre corps de la tête aux pieds avec une attention bienveillante et non-jugeante.",
+levels:{1:"10 min, zones principales seulement.",2:"20 min, corps complet. Notez 3 observations.",3:"20 min + nommez chaque sensation précisément (température, pression, pulsation…).",4:"30 min + intégration : reliez chaque zone à une émotion ou valeur."},
+steps:["Allongez-vous ou asseyez-vous confortablement","Fermez les yeux, trois respirations profondes","Portez attention au sommet du crâne","Descendez lentement : front, yeux, mâchoire, cou…","Observez chaque zone sans chercher à changer quoi que ce soit","Continuez jusqu'aux orteils","Revenez à une conscience globale du corps entier"]},
+{id:"p5e2",name:"Respiration 4-7-8",dur:5,ico:"🌬️",
+instr:"Technique de régulation du système nerveux. Inspirez 4s, retenez 7s, expirez 8s.",
+levels:{1:"4 cycles. Observez.",2:"4 cycles × 2 rounds. Notez FC avant/après.",3:"4 cycles × 3 rounds. Intégrez à un moment stressant de la journée.",4:"4 cycles × 4 rounds matin + soir + 1 moment de crise. Notez l'effet sur la clarté mentale."},
+steps:["Asseyez-vous droit, langue derrière les dents du haut","Expirez complètement par la bouche","Inspirez par le nez en comptant 4 secondes","Retenez votre souffle en comptant 7 secondes","Expirez par la bouche en comptant 8 secondes","Répétez 4 cycles maximum au début"]},
+{id:"p5e3",name:"Clarification des Valeurs",dur:20,ico:"🧭",
+instr:"Explorez vos 10 domaines de valeurs. Distinguez importance (ce qui compte) et satisfaction (où vous en êtes).",
+levels:{1:"Notez importance seulement. Identifiez le top 3.",2:"Importance + satisfaction. Trouvez l'écart le plus grand.",3:"Top 3 domaines + 1 action concrète par domaine pour cette semaine.",4:"10 domaines complets + plan d'actions engagées sur 30 jours."},
+steps:["Ouvrez l'onglet Valeurs pour le schéma interactif","Pour chaque domaine : notez l'importance (0-10)","Pour chaque domaine : notez la satisfaction actuelle (0-10)","Identifiez les domaines avec le plus grand écart","Choisissez 1 domaine prioritaire pour cette semaine","Définissez 1 action concrète alignée sur cette valeur"]},
+{id:"p5e4",name:"Marche Consciente",dur:15,ico:"🚶",
+instr:"Pleine conscience en marchant. Attention sur chaque sensation : contact des pieds, mouvement, environnement.",
+levels:{1:"10 min, focus pieds uniquement.",2:"15 min, focus pieds + environnement (5 sens).",3:"20 min, focus complet + nommez chaque distraction et revenez.",4:"30 min marche + 10 min journal : qu'avez-vous observé que vous ne remarquez jamais ?"},
+steps:["Choisissez un trajet simple (même en intérieur)","Marchez plus lentement que d'habitude","Attention aux pieds : contact avec le sol, poids, équilibre","Attention au corps : balancement des bras, posture","Attention aux sens : sons, odeurs, lumière, température","Si l'esprit vagabonde, revenez aux sensations des pieds"]}
+]},
+{id:6,name:"Intégration Totale",sub:"Hexaflex ACT complet",weeks:[11,12],days:[71,90],color:"#e8a020",icon:"🏆",label:"Intégration",
+pivots:["presence","defusion","soi","acceptation","valeurs","actions"],
+desc:"Synthèse des 6 processus ACT. Consolidation de l'Hexaflex, plan anti-rechute et projection vers l'avenir.",
+exercises:[
+{id:"p6e1",name:"Hexaflex Complet",dur:30,ico:"⬡",
+instr:"Pratiquez les 6 processus ACT en séquence. C'est le protocole d'intégration finale.",
+levels:{1:"3 pivots seulement (Présence, Défusion, Valeurs). 3 min chacun.",2:"5 pivots, 3 min chacun. Notez les connexions entre eux.",3:"6 pivots, 3 min chacun + 5 min d'intégration. Quel pivot est encore le plus difficile ?",4:"6 pivots, 5 min chacun + journal de synthèse. L'Hexaflex comme mode de vie."},
+steps:["Contact présent : 3 min de pleine conscience sensorielle","Acceptation : accueillez une émotion difficile du moment (3 min)","Défusion : identifiez une pensée, mettez-la en sous-titre (3 min)","Soi-contexte : observez vos expériences depuis un 'je' stable (3 min)","Valeurs : quel domaine guide votre journée aujourd'hui ? (3 min)","Action engagée : planifiez 1 action valorisée concrète (5 min)","Intégration : comment les 6 processus se connectent-ils ?"]},
+{id:"p6e2",name:"Revue des 90 Jours",dur:45,ico:"📊",
+instr:"Bilan complet de votre transformation. Regardez le chemin parcouru avec honnêteté et bienveillance.",
+levels:{1:"Bilan calendrier + 3 apprentissages clés.",2:"Bilan complet + 6 pivots évalués (1-10 chacun).",3:"Bilan + comparaison schéma valeurs début vs maintenant.",4:"Bilan exhaustif : journal + valeurs + pivots + plan post-90J détaillé."},
+steps:["Regardez votre calendrier 90 jours : combien de jours pratiqués ?","Relisez vos journaux des phases précédentes","Quelles compétences ACT maîtrisez-vous maintenant ?","Quels défis restent présents ? Sans jugement","Comment le Dictateur a-t-il évolué ?","Où en êtes-vous dans vos 10 domaines de valeurs ?","Écrivez 3 transformations concrètes que vous avez vécues"]},
+{id:"p6e3",name:"Plan Anti-Rechute",dur:30,ico:"🛡️",
+instr:"Préparez votre plan de maintenance post-programme. Déclencheurs, stratégies, ressources.",
+levels:{1:"3 déclencheurs + 1 stratégie chacun.",2:"3 déclencheurs + 2 stratégies + contact de soutien.",3:"5 déclencheurs + hiérarchie d'intervention + révision mensuelle planifiée.",4:"Plan complet anti-rechute sur 12 mois avec jalons mensuels."},
+steps:["Listez vos 3 principaux déclencheurs de crise","Pour chaque déclencheur : quelle stratégie ACT utiliser ?","Quels exercices garder en routine quotidienne ? (20 min max)","Quel est votre 'protocole urgence' si rechute ?","Qui peut vous soutenir ? Notez un contact de soutien","Planifiez une révision mensuelle dans votre calendrier"]},
+{id:"p6e4",name:"Lettre à Soi Futur",dur:20,ico:"📜",
+instr:"Écrivez une lettre à vous-même dans 1 an. Qui voulez-vous être ? Qu'aurez-vous accompli ?",
+levels:{1:"1 page, 3 domaines de valeurs évoqués.",2:"2 pages, tous les domaines abordés.",3:"Lettre complète + liste de 10 actions engagées pour l'année.",4:"Lettre + capsule temporelle numérique (notes, photos, objectifs)."},
+steps:["Commencez par 'Cher Baudouin dans 1 an…'","Décrivez qui vous êtes devenu","Quelles valeurs guidez-vous concrètement ?","Comment avez-vous géré les défis post-programme ?","Quel message de sagesse voudriez-vous vous transmettre ?","Signez et datez — programmez une alarme dans 1 an"]}
+]}
+];
+
+// ══════════════════════════════════════
+// MÉTA-DONNÉES CLINIQUES PAR EXERCICE
+// signes que ça marche, FAQ, variantes
+// ══════════════════════════════════════
+const EX_META = {
+"p1e1":{
+  signs:["Tu arrives à nommer les règles sans en être submergé","Tu remarques leur rigidité au lieu de la prendre pour vraie","Tu ressens une légère distance avec les 'je dois'"],
+  faq:[
+    {q:"Je ne trouve pas de règles à lister",a:"Rappelle-toi une situation difficile récente. Qu'est-ce que tu t'es dit ? 'J'aurais dû…' — c'est le Dictateur. Une seule règle suffit pour commencer."},
+    {q:"J'en ai trop, je ne sais pas par où commencer",a:"Choisis la règle qui crée le plus de souffrance AUJOURD'HUI. Une seule. La cartographie complète se construit en plusieurs sessions."},
+    {q:"Ces règles me semblent vraies et nécessaires",a:"Normal. L'objectif n'est pas de les effacer mais de les voir comme des règles — pas comme des lois universelles. La défusion vient plus tard."}
+  ],
+  variante:"Si écrire bloque : dis les règles à voix haute et enregistre. Si trop intense : liste d'abord les 3 règles les moins douloureuses."
+},
+"p1e2":{
+  signs:["Tu identifies la différence entre la situation (neutre) et ta pensée (chargée)","Tu nommes l'émotion avec précision (anxiété vs honte vs tristesse)","La chaîne Situation→Pensée→Émotion devient visible avant la réaction"],
+  faq:[
+    {q:"Je n'arrive pas à séparer situation et pensée",a:"La situation = ce qu'une caméra verrait. Neutre, factuel. 'Mon patron m'a ignoré' (situation) vs 'Il me méprise' (pensée). Si quelqu'un d'autre pourrait penser autrement face à la même situation → c'est une pensée."},
+    {q:"Je n'arrive pas à identifier mes émotions précisément",a:"Commence par 4 catégories : Peur, Colère, Tristesse, Joie. Identifie la catégorie, puis l'intensité 0-10. La précision affective se développe avec la pratique."}
+  ],
+  variante:"Version express : note uniquement la Pensée + l'Émotion + une intensité 0-10. 2 minutes maximum."
+},
+"p1e3":{
+  signs:["Tu génères des contre-preuves réelles (pas des consolations)","La règle te semble légèrement moins absolue après l'exercice","Tu formules une règle alternative qui te semble réaliste — pas forcément positive"],
+  faq:[
+    {q:"Je ne trouve pas de contre-preuves",a:"Demande-toi : 'Y a-t-il eu UNE seule exception à cette règle dans toute ma vie ?' Une seule exception réelle suffit à invalider une règle ABSOLUE."},
+    {q:"Ma règle alternative me semble aussi fausse",a:"Elle ne doit pas être positive — elle doit être PRÉFÉRENTIELLE. 'Je DOIS réussir' → 'Je PRÉFÈRE réussir, et je peux gérer l'échec'. La nuance change tout."}
+  ],
+  variante:"Version visuelle : dessine une balance. Preuves POUR la règle d'un côté, contre-preuves de l'autre. La visualisation spatiale aide à sortir de la pensée circulaire."
+},
+"p1e4":{
+  signs:["Tu exprimes quelque chose de vrai sans être submergé","Tu reconnais l'intention du Dictateur (protection) même en contestant ses méthodes","Tu ressens une légère libération après l'écriture"],
+  faq:[
+    {q:"La lettre me semble ridicule",a:"Le Dictateur te dit que c'est ridicule. C'est lui qui parle. Note cette résistance et continue. La résistance à l'exercice est souvent proportionnelle à son besoin."},
+    {q:"Je ne sais pas quoi écrire",a:"Commence par : 'Cher Dictateur, tu m'as dit pendant des années que [règle]. Ça m'a coûté [coût concret].' Deux phrases suffisent."}
+  ],
+  variante:"Version orale : enregistre ta lettre à voix haute. Certains expriment beaucoup plus en parlant. L'enregistreur est intégré à cet exercice."
+},
+"p2e1":{
+  signs:["Tu remarques le moment exact où tu quittes la tribune et y reviens — c'est de la défusion","Les pensées commencent à sembler légèrement extérieures, presque absurdes","Tu arrives à nommer un personnage : 'Ah, voilà encore Raté qui défile'"],
+  faq:[
+    {q:"Je n'arrive pas à visualiser un défilé net — est-ce un problème ?",a:"Non. La clarté visuelle est totalement irrelevante. Même une vague impression, un ressenti, une idée du défilé fonctionne pareil. Ce qui compte : l'INTENTION d'observer plutôt que de participer. Essaie les yeux ouverts si la visualisation bloque."},
+    {q:"Je suis constamment emporté par les pensées",a:"Parfait. Noticing you were swept away IS the exercise. Chaque retour à la tribune = une répétition de l'observateur. 20 retours = 20 entraînements. Il n'y a pas d'échec possible ici."},
+    {q:"Mon esprit est vide — aucune pensée n'arrive",a:"Regarde simplement la place vide. Continue d'attendre. Les pensées arrivent toujours. Un moment de calme n'est pas un raté."}
+  ],
+  variante:"Alternative — Passagers du Bus (Hayes, 1999) : tu es le chauffeur, tes pensées sont des passagers bruyants à l'arrière. Tu les entends — tu conduis quand même selon tes valeurs. Utile si la tribune ne parle pas visuellement."
+},
+"p2e2":{
+  signs:["Après 30-45s : le mot semble bizarre, creux, presque drôle","Tu ressens un allégement — pas une disparition totale mais une distance","L'intensité émotionnelle du mot baisse d'au moins 1-2 points sur 10"],
+  faq:[
+    {q:"Le mot ne perd pas son sens",a:"Accélère la répétition — elle doit être un galop verbal. Si le mot est très chargé, commence par le mot 'LAIT' pendant 30s pour calibrer l'expérience, puis reviens au mot difficile. L'effet prend 60-90s sur les mots très chargés."},
+    {q:"Je me sens stupide à répéter un mot à voix haute",a:"C'est normal. Cette gêne légère est exactement le type d'inconfort que ce programme entraîne à tolérer. Si vraiment impossible à voix haute : la version écrite fonctionne aussi."},
+    {q:"Combien de temps faut-il faire l'exercice sur le même mot ?",a:"Une pratique quotidienne sur le même mot pendant 7 jours. L'effet est cumulatif — l'association émotionnelle baisse progressivement, pas en une seule session."}
+  ],
+  variante:"Version écrite : écris le mot 100 fois de suite rapidement — même satiation sémantique. Version voix : dis le mot avec une voix de dessin animé — casse le lien sérieux-pensée."
+},
+"p2e3":{
+  signs:["Tu localises l'envie dans ton corps avec précision (gorge, poitrine, mains, ventre)","Tu observes la montée ET la descente sans avoir cédé","L'envie diminue progressivement sur plusieurs semaines de pratique régulière"],
+  faq:[
+    {q:"L'envie ne descend pas — elle reste au même niveau",a:"Es-tu en train de la combattre silencieusement ? Toute résistance — même mentale — maintient l'intensité. Observe-la comme si tu regardais un objet posé sur une table. Ni ami ni ennemi."},
+    {q:"C'est devenu plus intense quand j'ai arrêté de résister",a:"Intensification paradoxale — normale et temporaire. Comme un bras de fer : lâcher prise crée d'abord une tension avant le soulagement. Reste 2-3 minutes supplémentaires dans cet état."},
+    {q:"Combien de temps dure une vague typique ?",a:"Marlatt (1985) : 15-30 minutes maximum si pas d'action et si on observe sans combattre. En pratique : le pic dure 7-12 minutes. La courbe est prévisible. Ton cerveau ne maintient pas l'urgence indéfiniment."}
+  ],
+  variante:"Version courte (3 min) : STOP → Nomme l'envie → Localise dans le corps → Respire 4-7-8 → Observe 2 min → Note l'intensité finale. Peut être pratiqué n'importe où discrètement."
+},
+"p2e4":{
+  signs:["Les pensées s'éloignent progressivement — même les plus collantes partent après quelques feuilles","Tu reviens à la rivière après être emporté sans frustration","La pratique devient moins effort et plus observation naturelle"],
+  faq:[
+    {q:"Certaines pensées refusent de partir sur la feuille",a:"Ne force pas. Regarde la feuille et la pensée dessus sans bouger. Les pensées lourdes sont des ancres — elles ont plus de poids émotionnel. C'est une information sur leur importance, pas un échec."},
+    {q:"Je préfère une autre image",a:"Parfait. Prends celle qui résonne : nuages dans le ciel, voitures sur l'autoroute, bagages sur un convoyeur d'aéroport. L'image est un véhicule, pas l'objectif."}
+  ],
+  variante:"Alternative convoyeur d'aéroport : chaque pensée = un bagage qui tourne. Tu regardes passer les bagages. Tu n'as pas à prendre chaque bagage — juste observer lequel arrive."
+},
+"p2e5":{
+  signs:["Tu commences à voir tes pensées 'apparaître' plutôt que d'en être directement le contenu","Tu peux nommer une pensée sans réagir automatiquement : 'Mon cerveau dit que je suis nul'","La fréquence des sous-titres remarqués augmente avec la pratique"],
+  faq:[
+    {q:"Je n'arrive pas à maintenir ça toute la journée",a:"Normal. Commence par un contexte précis : les 30 premières minutes du matin, ou pendant les transports. L'application continue se développe progressivement."},
+    {q:"C'est épuisant de surveiller ses pensées en permanence",a:"Ce n'est pas de la surveillance — c'est une observation légère. Le but est que les pensées deviennent de l'arrière-plan, pas un objet d'analyse constante."}
+  ],
+  variante:"Variante voix off : imagine tes pensées comme la voix off d'un documentaire sur ta vie. 'Et maintenant, Baudouin pense qu'il va rater cette réunion…' La 3ème personne crée une distance naturelle."
+},
+"p3e1":{
+  signs:["Tu ressens les sensations ET tu restes — c'est la victoire","La cotation de détresse diminue d'un round à l'autre (8→6→4)","Tu commences à te dire 'je peux gérer ça' plutôt que 'c'est dangereux'"],
+  faq:[
+    {q:"J'ai eu très peur et j'ai arrêté",a:"Normal pour la 1ère session. Commence à 30 secondes. L'objectif : rester quelques secondes DE PLUS que d'habitude. L'habituation est graduelle et cumulée."},
+    {q:"Je ne ressens rien",a:"Assure-toi de respirer PROFONDÉMENT depuis la poitrine (pas abdominalement) et TRÈS vite. Si rien après 90s : essaie la respiration paille."},
+    {q:"Est-ce vraiment sans danger ?",a:"Pour personnes en bonne santé cardio : oui. L'hyperventilation provoque une hypocapnie temporaire — inconfortable mais non dangereuse. CONTRE-INDICATIONS : maladie cardiaque, épilepsie, grossesse, asthme sévère."}
+  ],
+  variante:"Version douce : inspire 4s / expire 2s pendant 60s. Légère accélération cardiaque sans vertiges intenses. Bon point d'entrée pour les premières sessions."
+},
+"p3e2":{
+  signs:["Tu restes assis sans chercher à saisir quelque chose pendant le vertige","Le vertige diminue d'intensité d'une session à l'autre","Tu commences à percevoir le vertige comme inconfort plutôt que danger"],
+  faq:[
+    {q:"Je tombe si je me lève trop vite",a:"Reste assis pendant 2 minutes après l'arrêt. Le vertige positionnel disparaît naturellement. C'est de l'hypotension orthostatique temporaire — sans danger."}
+  ],
+  variante:"Sans chaise pivotante : secoue la tête de droite à gauche rapidement pendant 30s. Produit des vertiges similaires."
+},
+"p3e3":{
+  signs:["Tu tiens 2 minutes sans retirer la paille","La détresse de 'manque d'air' diminue d'une session à l'autre","Tu réalises que tu as suffisamment d'air même si la sensation dit le contraire"],
+  faq:[
+    {q:"Je panique et retire la paille",a:"La prochaine fois, tiens 30 secondes de plus avant de retirer. L'exposition est progressive. S'approcher du seuil d'inconfort, pas le dépasser brutalement."},
+    {q:"Est-ce que je peux réellement m'étouffer ?",a:"Non. Tu as suffisamment d'air pour maintenir ton taux d'oxygène normal. La sensation d'étouffement est un signal d'alarme neurologique — pas une réalité physiologique."}
+  ],
+  variante:"Version progressive : commence par 2 pailles superposées (plus d'air), puis 1, puis 1 paille fine. Si pas de paille : pince les narines et respire par la bouche avec les lèvres pincées."
+},
+"p3e4":{
+  signs:["Tu observes ton cœur accélérer sans catastrophiser","Tu restes immobile pendant la récupération sans chercher à accélérer le retour au calme","Tu constates que le cœur se régule naturellement — toujours"],
+  faq:[
+    {q:"Mon cœur bat très fort — c'est normal ?",a:"Oui. C'est l'objectif. Une accélération cardiaque lors d'un effort physique est normale et sans danger chez une personne en bonne santé. L'exercice apprend à distinguer 'cœur qui bat fort' de 'danger'."}
+  ],
+  variante:"30 squats rapides produisent la même accélération cardiaque sans impact articulaire. Adapté si la course sur place est inconfortable."
+},
+"p3e5":{
+  signs:["Tu restes avec l'émotion 2-3 minutes de plus que tu ne l'aurais fait naturellement","L'intensité de l'émotion évolue pendant que tu l'observes — même si elle ne baisse pas toujours","Tu commences à distinguer l'émotion elle-même des pensées AUTOUR de l'émotion"],
+  faq:[
+    {q:"L'émotion reste aussi intense pendant tout l'exercice",a:"L'objectif n'est pas de réduire l'intensité — c'est de changer ta RELATION à l'intensité. Rester avec une émotion intense sans fuir est en soi une victoire, indépendamment de son évolution."},
+    {q:"Je n'arrive pas à 'courir vers' l'émotion — c'est trop fort",a:"Commence par t'en approcher seulement. Imagine l'émotion à 3 mètres devant toi. Fais 1 pas vers elle. Stop. Observe. Un pas, pas un plongeon."}
+  ],
+  variante:"Version physique : provoque la sensation corporelle (course sur place) puis applique DARE sur les sensations. Le corps est un vecteur d'exposition puissant."
+},
+"p4e1":{
+  signs:["Tu identifies une croyance centrale — pas juste la pensée de surface","La pensée alternative te semble équilibrée — pas juste positive","L'intensité émotionnelle baisse d'au moins 2 points après l'exercice"],
+  faq:[
+    {q:"La pensée alternative me semble forcée ou fausse",a:"Elle ne doit pas être positive — elle doit être ÉQUILIBRÉE. 'J'ai raté' → 'J'ai raté ET j'ai des compétences qui restent'. Ce n'est pas de l'optimisme, c'est de l'exactitude factuelle."},
+    {q:"Je n'arrive pas à trouver la croyance B",a:"Demande-toi : si cette situation s'était vraiment mal passée, qu'est-ce que ça dirait de TOI comme personne ? La réponse est souvent la croyance centrale."}
+  ],
+  variante:"Version express (2 min) : Situation → Pensée automatique → 'Cette pensée m'aide-t-elle à agir selon mes valeurs ?' Une seule question suffit en situation de crise."
+},
+"p4e2":{
+  signs:["Tu identifies le type de distorsion avant même de finir l'analyse","La cotation d'intensité baisse après la restructuration","Tu génères des pensées alternatives sans chercher à supprimer l'originale"],
+  faq:[
+    {q:"Je n'arrive pas à distinguer les distorsions",a:"Commence par les 3 plus communes : Tout-ou-rien, Catastrophisation, Personnalisation. 80% des situations rentrent dans ces 3 catégories."},
+    {q:"Je suis convaincu que ma pensée est vraie",a:"Test de l'ami : 'Si un ami vivait exactement la même situation, lui dirais-je la même chose ?' Si non — c'est une distorsion. On est souvent plus sévère envers soi."}
+  ],
+  variante:"Distorsions cheat sheet : Tout-ou-rien / Surgénéralisation / Filtre mental / Saut aux conclusions / Catastrophisation / Personnalisation / Devrait-Doit. Garde cette liste sous la main pendant l'exercice."
+},
+"p4e3":{
+  signs:["Tu génères plus de 5 options — dont certaines qui te surprennent","Tu te sens moins paralysé après l'exercice","Tu passes à l'action sur au moins 1 option dans les 24h suivantes"],
+  faq:[
+    {q:"Je ne vois que 2-3 options",a:"Force-toi à ajouter des options ABSURDES ou IMPOSSIBLES : 'ne rien faire', 'demander à 50 personnes', 'le faire à 3h du matin'. Les options extrêmes révèlent souvent des intermédiaires réalistes auxquels on n'avait pas pensé."},
+    {q:"Toutes les options semblent mauvaises",a:"Retourne au S (Stop). As-tu identifié le VRAI problème ou seulement son symptôme visible ? Ex: 'je n'arrive pas à dormir' (symptôme) vs 'j'ai de l'anxiété anticipatoire' (vrai problème)."}
+  ],
+  variante:"Version STAR (rapide) : Situation → Tentatives passées → Alternatives 3 nouvelles → Résultat choisi. Plus rapide en crise. Garde SODAS complet pour les problèmes complexes."
+},
+"p4e4":{
+  signs:["Tu planifies une activité et tu l'exécutes réellement dans les 48h","Tu notes une différence de mood avant/après — même légère","Tu commences à réassocier action et plaisir plutôt qu'évitement"],
+  faq:[
+    {q:"Je n'ai envie de rien — comment choisir ?",a:"Ne cherche pas une activité qui te donne envie maintenant — cherche une qui t'AURAIT donné envie avant. Le plaisir revient APRÈS l'action, pas avant. C'est l'anhédonie classique."},
+    {q:"Je planifie mais je ne le fais jamais",a:"Planification trop ambitieuse. Réduis à 10 minutes. Ou à une action aussi petite que 'mettre les chaussures de sport'. Le momentum se construit par accumulation de micro-actions."}
+  ],
+  variante:"Activation progressive : liste 10 activités. Note l'évitement 0-10 pour chacune. Commence par la plus basse (ex: 3/10). Monte d'un cran chaque semaine."
+},
+"p5e1":{
+  signs:["Tu remarques des zones de tension que tu ne percevais pas avant","Certaines zones se détendent légèrement juste par l'attention portée","Tu reviens au corps après vagabondage sans frustration — juste un retour neutre"],
+  faq:[
+    {q:"Mon esprit n'arrête pas de vagabonder",a:"C'est le DMN (Default Mode Network) — le mode par défaut du cerveau. Universel et inévitable. 30 vagabondages avec 30 retours = 30 répétitions d'entraînement attentionnel. Ce n'est pas un échec, c'est exactement la pratique."},
+    {q:"Je m'endors pendant le scan",a:"Passe en position assise. Ouvre légèrement les yeux. Ou fais-le à un moment où tu es plus alerte. S'endormir = signal de fatigue réelle à honorer."},
+    {q:"Je ne ressens rien dans certaines zones",a:"Normal. Certaines zones corporelles sont peu intéroceptives. Reste simplement l'attention dans la zone sans attendre de sensation. La capacité se développe sur plusieurs semaines."}
+  ],
+  variante:"Version ultra-courte (2 min) : ferme les yeux, pose une main sur la poitrine. Sens le mouvement respiratoire. Note 3 sensations dans le corps. Peut être fait n'importe où."
+},
+"p5e2":{
+  signs:["Après 3-4 cycles : rythme cardiaque perceptiblement plus lent","Mâchoire et épaules se relâchent spontanément sans effort","L'urgence mentale diminue — les pensées semblent moins pressantes"],
+  faq:[
+    {q:"Je n'arrive pas à tenir 7 secondes de rétention",a:"Commence par 4-4-6 (inspire 4s, retiens 4s, expire 6s). Le RATIO est important (expire > rétention > inspire), pas les chiffres exacts. Augmente progressivement."},
+    {q:"Je me sens étourdi",a:"Tu forces trop l'inspiration. Respiration normale en profondeur — pas un gonflage maximal. Réduis à 3-5-6 et ajuste jusqu'à disparition du vertige."}
+  ],
+  variante:"Cohérence cardiaque (alternative) : inspire 5s, expire 5s, pendant 5 min. Même activation du nerf vague, plus simple. Utilise l'app Respirelax ou un métronome."
+},
+"p5e3":{
+  signs:["Tu identifies clairement tes top 3 domaines de valeurs sans hésitation","L'écart Importance/Satisfaction révèle des domaines que tu négligeais","Tu génères une action concrète alignée sur une valeur — pas juste une intention"],
+  faq:[
+    {q:"Tout me semble important — je n'arrive pas à hiérarchiser",a:"Demande-toi : 'Si je devais choisir UNE chose que j'aurais voulu faire sur mon lit de mort, ce serait dans quel domaine ?' La mort comme filtre est sévère mais efficace pour révéler les vraies priorités."},
+    {q:"Mes valeurs me semblent abstraites",a:"Traduis chaque valeur en action observable. 'Famille' → 'appeler ma mère dimanche sans téléphone'. La valeur est une direction, l'action est un pas. Une valeur sans action n'est qu'une intention."}
+  ],
+  variante:"Test des funérailles (Russ Harris) : imagine que des proches parlent de toi à tes funérailles. Que voudrais-tu qu'ils disent sur ta façon de vivre ? Leurs réponses pointent directement vers tes valeurs réelles."
+},
+"p5e4":{
+  signs:["Tu remarques des détails de ton environnement invisibles en pilote automatique","Le temps subjectif ralentit légèrement pendant la marche","Tu rentres avec un état mental différent de celui avec lequel tu es parti"],
+  faq:[
+    {q:"J'ai des pensées tout le temps pendant la marche",a:"La marche consciente n'est pas une marche sans pensées — c'est une marche où tu reviens aux sensations chaque fois que tu es emporté. Les pensées arrivent toujours. Le retour aux pieds est l'exercice."},
+    {q:"Je n'ai pas le temps de marcher 15-20 min",a:"3 minutes suffisent. De ta voiture au bureau, de l'ascenseur à la salle de réunion. L'intensité de l'attention importe plus que la durée."}
+  ],
+  variante:"5 sens en marchant : 5 choses que tu VOIS, 4 que tu ENTENDS, 3 que tu TOUCHES, 2 que tu SENS (odeurs), 1 que tu GOÛTES. Structure simple qui ancre immédiatement dans le moment présent."
+},
+"p6e1":{
+  signs:["Tu passes d'un pivot à l'autre de façon fluide sans chercher ta place","Tu remarques quand tu sautes involontairement un pivot et tu y reviens","Les 6 processus commencent à sembler naturels plutôt qu'artificiels"],
+  faq:[
+    {q:"Je me perds dans la séquence",a:"Acronyme PDSA-VA : Présence → Défusion → Soi → Acceptation → Valeurs → Actions. 3 min chacun avec le timer. La structure protège la pratique en éliminant les décisions pendant l'exercice."},
+    {q:"Certains pivots me semblent encore très difficiles",a:"C'est ta frontière de croissance actuelle. La Phase 6 ne signifie pas maîtrise parfaite — c'est la capacité à pratiquer ensemble MALGRÉ les difficultés. Note le pivot difficile : c'est ton axe post-programme."}
+  ],
+  variante:"Hexaflex 10 min : 1 respiration (Présence) → 1 sous-titre mental (Défusion) → 1 regard observateur (Soi) → 1 accueil d'émotion (Acceptation) → 1 valeur du jour (Valeurs) → 1 action engagée (Actions). 1-2 min par pivot."
+},
+"p6e2":{
+  signs:["Tu identifies des transformations concrètes — pas juste des intentions","Tu regardes ton calendrier sans honte ni fierté excessive — juste des faits","Tu peux dire 'j'ai progressé sur X et je travaille encore sur Y' sans urgence"],
+  faq:[
+    {q:"J'ai raté beaucoup de jours — la revue est douloureuse",a:"La régularité parfaite n'est pas l'objectif — la direction est. Applique la défusion sur la honte : 'Mon Dictateur dit que j'ai échoué.' Regarde les données, pas le jugement."},
+    {q:"Je ne vois pas de changement concret",a:"Pose ces questions : 'Ai-je une réaction légèrement différente à [déclencheur] qu'il y a 90 jours ?' Les micro-changements de relation aux pensées/émotions sont réels même s'ils semblent invisibles."}
+  ],
+  variante:"Comparaison schéma valeurs : remplis le schéma des 10 domaines comme au Jour 1. Compare avec aujourd'hui. Les écarts racontent souvent plus que les mots."
+},
+"p6e3":{
+  signs:["Tu identifies tes 3 déclencheurs principaux avec précision","Pour chaque déclencheur : tu as une stratégie ACT spécifique prête","Tu as planifié une révision mensuelle dans ton calendrier — concrètement"],
+  faq:[
+    {q:"Je ne sais pas quels exercices garder en routine",a:"Règle des 3 : 1 exercice de Présence (scan 10 min), 1 de Défusion (sous-titres quotidiens), 1 d'Action engagée (1 action valorisée/jour). 20 minutes total. Cette triade couvre les 6 pivots en condensé."},
+    {q:"J'ai peur de rechuter dès l'arrêt du programme",a:"La rechute partielle est normale et prévisible. Ce n'est pas un retour à zéro. Le plan anti-rechute transforme la rechute potentielle en information plutôt qu'en catastrophe."}
+  ],
+  variante:"Carte de crise de poche : note sur ton téléphone — Mon déclencheur → Ma stratégie ACT → Mon contact de soutien. Accessible en 3 secondes si crise."
+},
+"p6e4":{
+  signs:["Tu écris à toi-même comme à quelqu'un que tu respectes","Les valeurs mentionnées sont celles que tu as réellement vécues — pas des idéaux abstraits","Tu ressens quelque chose en lisant la lettre — elle est authentique"],
+  faq:[
+    {q:"Je ne sais pas quoi écrire — l'avenir me semble flou",a:"Commence par : 'Cher Baudouin, voilà ce que je voudrais que tu saches sur cette période…' La lettre peut parler du passé (les 90 jours) autant que du futur. Elle est un pont entre les deux."},
+    {q:"La lettre me semble trop optimiste",a:"Elle peut l'être. Une lettre légèrement optimiste que tu relis dans 1 an peut devenir un ancrage motivationnel réel. L'idéal est une direction, pas une certitude."}
+  ],
+  variante:"Capsule temporelle : photo de toi aujourd'hui + lettre + liste de 10 engagements → email programmé pour dans 1 an. Le service FutureMe.org permet d'envoyer des emails à une date future."
+}
+};
+
+
+const SCENARIOS = [
+{id:"normal",label:"⚡ Normal",color:"#10b981",notice:""},
+{id:"stress",label:"😰 Stress",color:"#f59e0b",notice:"Sessions réduites à 5-10 min. Priorité : Respiration 4-7-8 → Défusion rapide (Milk Milk Milk). Maximum 2 exercices."},
+{id:"crise",label:"🚨 Crise",color:"#ef4444",notice:"Mode urgence activé. Rendez-vous dans l'onglet Urgences → Protocole Barlow immédiat. Un seul objectif : traverser la crise."},
+{id:"maladie",label:"🤒 Maladie",color:"#8b5cf6",notice:"Vous êtes alité(e). Scan corporel uniquement, 5-10 min allongé(e). Soyez doux(ce) avec vous-même."},
+{id:"coupure",label:"🔦 Coupure",color:"#6b7280",notice:"Sans électricité : exercices écrits uniquement. Méditation libre, journal sur papier. Pas d'audio, pas d'écran."},
+{id:"biere",label:"🍺 Envie bière",color:"#f97316",notice:"PRIORITÉ ABSOLUE : Urge Surfing maintenant (onglet Urgences). Puis Milk Milk Milk avec le mot 'alcool'. Appelez quelqu'un si l'envie persiste > 20 min."}
+];
+
+const SCHEDULES = {
+1:{
+  1:[
+    {t:"06:00",l:"Réveil en douceur",d:"5 min",type:"routine"},
+    {t:"06:05",l:"💪 Jacobson débutant (selon niveau)",d:"15-45 min",type:"physique"},
+    {t:"06:30",l:"Cartographie du Dictateur",d:"15 min",type:"ex",ex:"p1e1"},
+    {t:"06:50",l:"Café / Petit-déjeuner conscient",d:"20 min",type:"routine"},
+    {t:"07:30",l:"Activités normales",d:"",type:"free"},
+    {t:"12:30",l:"Journal de Pensées Automatiques",d:"10 min",type:"ex",ex:"p1e2"},
+    {t:"13:00",l:"Activités normales",d:"",type:"free"},
+    {t:"19:30",l:"Procès du Dictateur",d:"20 min",type:"ex",ex:"p1e3"},
+    {t:"21:00",l:"Bilan du jour",d:"5 min",type:"routine"},
+    {t:"21:30",l:"Sommeil",d:"",type:"sleep"}
+  ],
+  2:[
+    {t:"06:00",l:"Réveil + scan corporel",d:"5 min",type:"routine"},
+    {t:"06:05",l:"💪 Jacobson + marche (selon niveau)",d:"20-45 min",type:"physique"},
+    {t:"06:40",l:"Cartographie + nouvelles règles",d:"20 min",type:"ex",ex:"p1e1"},
+    {t:"07:00",l:"Journal de Pensées (matin)",d:"10 min",type:"ex",ex:"p1e2"},
+    {t:"07:20",l:"Activités normales",d:"",type:"free"},
+    {t:"12:15",l:"Pause pleine conscience",d:"5 min",type:"routine"},
+    {t:"12:20",l:"Procès du Dictateur",d:"15 min",type:"ex",ex:"p1e3"},
+    {t:"19:30",l:"Lettre au Dictateur",d:"20 min",type:"ex",ex:"p1e4"},
+    {t:"21:00",l:"Journal + bilan",d:"10 min",type:"routine"},
+    {t:"21:30",l:"Sommeil",d:"",type:"sleep"}
+  ]
+},
+2:{
+  1:[
+    {t:"06:00",l:"Réveil + respiration consciente",d:"5 min",type:"routine"},
+    {t:"06:05",l:"💪 Course consciente (selon niveau)",d:"15-50 min",type:"physique"},
+    {t:"06:35",l:"Tribune & Défilé",d:"15 min",type:"ex",ex:"p2e1"},
+    {t:"07:00",l:"Activités normales — sous-titres actifs",d:"",type:"free"},
+    {t:"12:30",l:"Milk Milk Milk",d:"10 min",type:"ex",ex:"p2e2"},
+    {t:"13:00",l:"Activités normales",d:"",type:"free"},
+    {t:"18:00",l:"Feuille sur la rivière",d:"10 min",type:"ex",ex:"p2e4"},
+    {t:"21:00",l:"Pensées en sous-titres — bilan",d:"5 min",type:"ex",ex:"p2e5"},
+    {t:"21:30",l:"Sommeil",d:"",type:"sleep"}
+  ],
+  2:[
+    {t:"06:00",l:"💪 Course consciente + Urge Surfing",d:"25-50 min",type:"physique"},
+    {t:"06:40",l:"Tribune & Défilé",d:"15 min",type:"ex",ex:"p2e1"},
+    {t:"07:00",l:"Milk Milk Milk",d:"10 min",type:"ex",ex:"p2e2"},
+    {t:"07:15",l:"Activités normales — sous-titres actifs",d:"",type:"free"},
+    {t:"12:30",l:"Urge Surfing (si envie présente)",d:"15 min",type:"ex",ex:"p2e3"},
+    {t:"19:30",l:"Tribune & Défilé (soirée)",d:"15 min",type:"ex",ex:"p2e1"},
+    {t:"21:00",l:"Bilan défusion",d:"10 min",type:"routine"},
+    {t:"21:30",l:"Sommeil",d:"",type:"sleep"}
+  ]
+},
+3:{
+  1:[
+    {t:"06:00",l:"Méditation courte",d:"5 min",type:"routine"},
+    {t:"06:05",l:"💪 Barlow niveau 1 : course + paille",d:"10-20 min",type:"physique"},
+    {t:"06:25",l:"Respiration paille",d:"5 min",type:"ex",ex:"p3e3"},
+    {t:"07:00",l:"Activités normales",d:"",type:"free"},
+    {t:"12:00",l:"Course sur place",d:"3 min",type:"ex",ex:"p3e4"},
+    {t:"19:30",l:"DARE — Plonger dans l'émotion",d:"15 min",type:"ex",ex:"p3e5"},
+    {t:"21:00",l:"Journal d'exposition",d:"10 min",type:"routine"},
+    {t:"21:30",l:"Sommeil",d:"",type:"sleep"}
+  ],
+  2:[
+    {t:"06:00",l:"💪 Barlow complet + douche froide",d:"20-45 min",type:"physique"},
+    {t:"06:40",l:"Hyperventilation contrôlée",d:"5 min",type:"ex",ex:"p3e1"},
+    {t:"06:50",l:"Rotation en chaise",d:"3 min",type:"ex",ex:"p3e2"},
+    {t:"07:00",l:"Activités normales",d:"",type:"free"},
+    {t:"12:30",l:"Course sur place + DARE",d:"15 min",type:"ex",ex:"p3e4"},
+    {t:"19:30",l:"DARE complet + journalisation",d:"20 min",type:"ex",ex:"p3e5"},
+    {t:"21:30",l:"Sommeil",d:"",type:"sleep"}
+  ]
+},
+4:{
+  1:[
+    {t:"06:00",l:"Respiration consciente",d:"5 min",type:"routine"},
+    {t:"06:10",l:"ABC Ellis — analyse matin",d:"15 min",type:"ex",ex:"p4e1"},
+    {t:"07:00",l:"💪 Marche de résolution 20 min",d:"20-55 min",type:"physique"},
+    {t:"07:30",l:"Activités normales",d:"",type:"free"},
+    {t:"12:30",l:"Restructuration cognitive",d:"20 min",type:"ex",ex:"p4e2"},
+    {t:"19:30",l:"SODAS D'Zurilla",d:"25 min",type:"ex",ex:"p4e3"},
+    {t:"21:00",l:"Bilan comportemental",d:"10 min",type:"routine"},
+    {t:"21:30",l:"Sommeil",d:"",type:"sleep"}
+  ],
+  2:[
+    {t:"06:00",l:"ABC Ellis (problème du jour)",d:"15 min",type:"ex",ex:"p4e1"},
+    {t:"06:20",l:"💪 Musculation / HIIT (selon niveau)",d:"30-55 min",type:"physique"},
+    {t:"07:00",l:"Activités normales",d:"",type:"free"},
+    {t:"12:00",l:"SODAS sur un problème concret",d:"25 min",type:"ex",ex:"p4e3"},
+    {t:"16:00",l:"Planification comportementale",d:"15 min",type:"ex",ex:"p4e4"},
+    {t:"19:30",l:"Restructuration cognitive (soirée)",d:"20 min",type:"ex",ex:"p4e2"},
+    {t:"21:30",l:"Sommeil",d:"",type:"sleep"}
+  ]
+},
+5:{
+  1:[
+    {t:"06:00",l:"Méditation du Corps",d:"20 min",type:"ex",ex:"p5e1"},
+    {t:"06:25",l:"Respiration 4-7-8",d:"5 min",type:"ex",ex:"p5e2"},
+    {t:"07:00",l:"💪 Yoga / Marche consciente (valeur)",d:"20-70 min",type:"physique"},
+    {t:"07:30",l:"Activités normales",d:"",type:"free"},
+    {t:"19:30",l:"Clarification des valeurs",d:"20 min",type:"ex",ex:"p5e3"},
+    {t:"21:00",l:"Journal de valeurs",d:"10 min",type:"routine"},
+    {t:"21:30",l:"Sommeil",d:"",type:"sleep"}
+  ],
+  2:[
+    {t:"06:00",l:"Méditation du Corps complète",d:"20 min",type:"ex",ex:"p5e1"},
+    {t:"06:25",l:"Respiration 4-7-8",d:"5 min",type:"ex",ex:"p5e2"},
+    {t:"07:00",l:"💪 Sport de valeur (selon niveau)",d:"35-70 min",type:"physique"},
+    {t:"08:00",l:"Activités normales — conscience continue",d:"",type:"free"},
+    {t:"12:30",l:"Marche consciente (déjeuner)",d:"15 min",type:"ex",ex:"p5e4"},
+    {t:"19:30",l:"Valeurs + action engagée du lendemain",d:"25 min",type:"ex",ex:"p5e3"},
+    {t:"21:30",l:"Sommeil",d:"",type:"sleep"}
+  ]
+},
+6:{
+  1:[
+    {t:"06:00",l:"Hexaflex Complet",d:"30 min",type:"ex",ex:"p6e1"},
+    {t:"06:35",l:"💪 Défi physique intégration",d:"30-90 min",type:"physique"},
+    {t:"07:30",l:"Activités normales avec conscience",d:"",type:"free"},
+    {t:"19:30",l:"Revue des 90 jours (début)",d:"45 min",type:"ex",ex:"p6e2"},
+    {t:"21:00",l:"Plan Anti-Rechute",d:"30 min",type:"ex",ex:"p6e3"},
+    {t:"21:45",l:"Sommeil",d:"",type:"sleep"}
+  ],
+  2:[
+    {t:"06:00",l:"Hexaflex Complet",d:"30 min",type:"ex",ex:"p6e1"},
+    {t:"06:35",l:"💪 Grand défi physique symbolique",d:"45-90 min",type:"physique"},
+    {t:"08:00",l:"Activités normales avec pleine conscience",d:"",type:"free"},
+    {t:"19:00",l:"Revue des 90 jours (finalisation)",d:"45 min",type:"ex",ex:"p6e2"},
+    {t:"20:00",l:"Lettre à Soi Futur",d:"20 min",type:"ex",ex:"p6e4"},
+    {t:"20:30",l:"Plan Anti-Rechute (révision finale)",d:"20 min",type:"ex",ex:"p6e3"},
+    {t:"21:15",l:"🏆 Célébration & sommeil",d:"",type:"sleep"}
+  ]
+}
+};
+
+const VALUES_DOMAINS = [
+"Famille","Couple & Intimité","Amitiés","Travail & Carrière",
+"Éducation","Loisirs & Créativité","Santé & Corps","Spiritualité","Citoyenneté","Finances"
+];
+
+const EMOTIONS = ["Anxieux","Triste","Colère","Frustré","Honte","Culpabilité","Peur","Confus","Seul","Épuisé","Calme","Reconnaissant","Motivé","Fier","Serein","Soulagé","Connecté","Joyeux"];
+
+const URGENCES_PROTOCOLS = [
+{id:"u1",name:"Crise de Pensées Intrusives",sub:"Protocole Dictateur",ico:"🧠",color:"#f43f5e",
+steps:[
+{n:1,t:"NOMMER",b:"Dites à voix haute ou en pensée : <strong>'Mon Dictateur dit que…'</strong> — Créez une distance immédiate."},
+{n:2,t:"OBSERVER",b:"Observez la pensée comme un <strong>personnage du Défilé</strong>. Qui est ce personnage ? Que dit-il ?"},
+{n:3,t:"DÉLITÉRALISER",b:"Répétez le mot chargé <strong>40 fois très vite</strong> (Milk Milk Milk). Il perd son pouvoir."},
+{n:4,t:"ANCRER",b:"5 choses que vous <strong>voyez</strong>, 4 que vous <strong>entendez</strong>, 3 que vous <strong>touchez</strong>."},
+{n:5,t:"VALEUR",b:"<strong>Quelle valeur</strong> voulez-vous honorer dans les 5 prochaines minutes ? Agissez."}
+]},
+{id:"u2",name:"Crise d'Anxiété / Panique",sub:"Protocole Barlow",ico:"🌊",color:"#06b6d4",
+steps:[
+{n:1,t:"ACCEPTER",b:"<strong>Ne combattez pas</strong> la panique — ça l'intensifie. Dites : 'D'accord, je l'accueille.'"},
+{n:2,t:"RESPIRER",b:"<strong>4-7-8</strong> : Inspirez 4s, retenez 7s, expirez 8s. 4 cycles. Activez le nerf vague."},
+{n:3,t:"NOMMER",b:"<strong>'Je ressens de l'anxiété'</strong> — pas <strong>'Je suis anxieux.'</strong> Vous n'êtes pas votre émotion."},
+{n:4,t:"RESTER",b:"<strong>Ne fuyez pas</strong> la situation. La panique dure max 10-20 min si vous ne la fuyez pas."},
+{n:5,t:"BILAN",b:"Après : notez que vous avez <strong>traversé</strong> la panique sans catastrophe. Preuve de capacité."}
+]},
+{id:"u3",name:"Problème Urgent",sub:"Protocole D'Zurilla SODAS",ico:"💡",color:"#f59e0b",
+steps:[
+{n:1,t:"S — STOP",b:"<strong>Pausez tout</strong>. Respirez 3 fois. Définissez le problème en UNE phrase précise."},
+{n:2,t:"O — OPTIONS",b:"<strong>Brainstorming rapide</strong> : listez 5 solutions en 3 min. Sans censurer, même les folles."},
+{n:3,t:"D — DÉCIDER",b:"<strong>Choisissez la meilleure</strong> maintenant — pas la parfaite. Critère : valeurs + faisabilité."},
+{n:4,t:"A — AGIR",b:"<strong>Première action dans les 5 minutes</strong>. Une seule. Le mouvement rompt la paralysie."},
+{n:5,t:"S — SATISFACTION",b:"<strong>Bilan</strong> : qu'avez-vous appris ? Même si imparfait, vous avez agi."}
+]},
+{id:"u4",name:"Envie de Boire",sub:"Protocole Urge Surfing",ico:"🍺",color:"#f97316",
+steps:[
+{n:1,t:"IDENTIFIER",b:"Nommez : <strong>'Je remarque une envie de boire.'</strong> Pas 'J'ai besoin de boire' — nuance cruciale."},
+{n:2,t:"LOCALISER",b:"<strong>Où est l'envie dans votre corps ?</strong> Ventre, gorge, poitrine ? Quelle forme, texture, chaleur ?"},
+{n:3,t:"SURFER",b:"<strong>Suivez la vague</strong> sans céder. Elle monte, atteint un pic (7-10 min) puis descend TOUJOURS."},
+{n:4,t:"MILK",b:"Répétez <strong>'alcool'</strong> très vite pendant 45 sec. Délitéralisez le mot. Réduisez son emprise."},
+{n:5,t:"AGIR",b:"<strong>Appelez quelqu'un maintenant</strong>. Changez d'espace physique. Engagez une action valorisée."}
+]}
+];
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let state = {
+  phase: 1,
+  week: 1,
+  level: 1,
+  scenario: "normal",
+  valMode: "importance",
+  valImportance: [8,7,6,9,7,6,8,5,5,7],
+  valSatisfaction: [5,4,6,7,5,7,5,4,4,6],
+  calProgress: {},
+  completedExercises: {}
+};
+
+// ══════════════════════════════════════
+// INDEXEDDB
+// ══════════════════════════════════════
+let db;
+function openDB(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open('ACT90',3);
+    req.onupgradeneeded=e=>{
+      const d=e.target.result;
+      ['recordings','journal','state','notes'].forEach(s=>{
+        if(!d.objectStoreNames.contains(s)){
+          const ks=s==='recordings'?{keyPath:'id',autoIncrement:true}:{keyPath:'key'};
+          d.createObjectStore(s,ks);
+        }
+      });
+    };
+    req.onsuccess=e=>{db=e.target.result;res(db);};
+    req.onerror=e=>rej(e);
+  });
+}
+
+async function dbSet(store,key,val){
+  if(!db)await openDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(store,'readwrite');
+    tx.objectStore(store).put({key,value:val});
+    tx.oncomplete=()=>res();
+    tx.onerror=e=>rej(e);
+  });
+}
+
+async function dbGet(store,key){
+  if(!db)await openDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(store,'readonly');
+    const req=tx.objectStore(store).get(key);
+    req.onsuccess=e=>res(e.target.result?.value);
+    req.onerror=e=>rej(e);
+  });
+}
+
+async function dbGetAll(store){
+  if(!db)await openDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(store,'readonly');
+    const req=tx.objectStore(store).getAll();
+    req.onsuccess=e=>res(e.target.result||[]);
+    req.onerror=e=>rej(e);
+  });
+}
+
+async function dbAdd(store,val){
+  if(!db)await openDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(store,'readwrite');
+    const req=tx.objectStore(store).add(val);
+    req.onsuccess=e=>res(e.target.result);
+    req.onerror=e=>rej(e);
+  });
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+async function init(){
+  await openDB();
+  // load saved state
+  const saved=await dbGet('state','main');
+  if(saved)Object.assign(state,saved);
+  else{
+    // auto-detect phase from current day
+    const day=getCurrentDay();
+    const ph=PHASES.find(p=>day>=p.days[0]&&day<=p.days[1]);
+    if(ph){state.phase=ph.id;state.week=day<=ph.days[0]+13?1:2;}
+  }
+  renderAll();
+  updateDayBadge();
+  buildCalendar();
+  buildValuesWheel();
+  buildUrgences();
+  buildJournal();
+  setInterval(updateTimerMini,1000);
+}
+
+function getCurrentDay(){
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  const start=new Date(START_DATE);
+  start.setHours(0,0,0,0);
+  const diff=Math.floor((today-start)/(1000*60*60*24))+1;
+  return Math.max(1,Math.min(90,diff));
+}
+
+async function saveState(){
+  await dbSet('state','main',{...state});
+}
+
+function updateDayBadge(){
+  const day=getCurrentDay();
+  document.getElementById('currentDayNum').textContent=day;
+  const ph=PHASES.find(p=>day>=p.days[0]&&day<=p.days[1]);
+  if(ph){
+    document.getElementById('phaseIndicator').textContent='Phase '+ph.id+' — '+ph.label;
+    document.getElementById('phaseIndicator').style.color=ph.color;
+  }
+}
+
+// ══════════════════════════════════════
+// TAB NAVIGATION
+// ══════════════════════════════════════
+function showTab(id,btn){
+  document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='valeurs')drawValues();
+}
+
+// ══════════════════════════════════════
+// PROGRAMME TAB
+// ══════════════════════════════════════
+function renderAll(){
+  renderPhaseSelector();
+  renderScenarioSelector();
+  renderPhaseContent();
+}
+
+function renderPhaseSelector(){
+  const c=document.getElementById('phaseSelector');
+  c.innerHTML=PHASES.map(p=>`
+    <button class="phase-btn ${state.phase===p.id?'active':''}"
+      style="--phase-color:${p.color}"
+      onclick="selectPhase(${p.id})">
+      <span class="pi">${p.icon}</span>
+      <span class="pl">Phase ${p.id}<br>${p.label}</span>
+    </button>`).join('');
+}
+
+function renderScenarioSelector(){
+  const c=document.getElementById('scenarioSelector');
+  c.innerHTML=SCENARIOS.map(s=>`
+    <button class="sc-btn ${state.scenario===s.id?'active':''}"
+      onclick="selectScenario('${s.id}')">${s.label}</button>`).join('');
+}
+
+function selectPhase(id){
+  state.phase=id;
+  state.week=1;
+  saveState();
+  renderAll();
+}
+
+function selectScenario(id){
+  state.scenario=id;
+  saveState();
+  renderPhaseContent();
+  renderScenarioSelector();
+}
+
+function setLevel(n,btn){
+  state.level=n;
+  document.querySelectorAll('.lv-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  saveState();
+  renderPhaseContent();
+}
+
+function selectWeek(n){
+  state.week=n;
+  saveState();
+  renderPhaseContent();
+}
+
+function renderPhaseContent(){
+  const ph=PHASES.find(p=>p.id===state.phase);
+  if(!ph)return;
+  document.documentElement.style.setProperty('--phase-color',ph.color);
+
+  // Scenario notice
+  const sc=SCENARIOS.find(s=>s.id===state.scenario);
+  const notice=document.getElementById('scNotice');
+  if(sc&&sc.notice){
+    notice.innerHTML='<strong>Mode '+sc.label+'</strong> — '+sc.notice;
+    notice.classList.add('show');
+  }else{notice.classList.remove('show');}
+
+  // Difficulty bar
+  const diffNames={1:"⭐ Découverte",2:"⭐⭐ Pratique",3:"⭐⭐⭐ Maîtrise",4:"🏆 Expert"};
+  const diffDescriptions={
+    1:"Sessions courtes 15-30 min. Exercices en version allégée. Idéal pour débuter ou journées difficiles.",
+    2:"Sessions 30-45 min. Volume et profondeur augmentés. Habitudes en construction.",
+    3:"Sessions 45-60 min. Exercices combinés. Compétences en consolidation.",
+    4:"Sessions 60-90 min. Protocoles complets. Intégration et défi personnel."
+  };
+  document.getElementById('diffBar').innerHTML=`
+    <span class="diff-label">Difficulté</span>
+    <div class="diff-levels">
+      ${[1,2,3,4].map(n=>`<span class="diff-lv ${state.level===n?'cur':''}">${diffNames[n]}</span>`).join('')}
+    </div>
+    <span class="diff-desc">— ${diffDescriptions[state.level]}</span>`;
+
+  // Phase header with pivots
+  const activePivots=ph.pivots||[];
+  const pivotBadges=ACT_PIVOTS.map(p=>`
+    <span class="pivot-badge ${activePivots.includes(p.id)?'active':'inactive'}"
+      style="color:${activePivots.includes(p.id)?p.color:'var(--text3)'};border-color:${activePivots.includes(p.id)?p.color+'44':'var(--border)'}">
+      ${p.icon} ${p.name}
+    </span>`).join('');
+
+  document.getElementById('phaseHeader').style.cssText=`border-color:${ph.color}33;background:color-mix(in srgb,${ph.color} 4%,var(--card))`;
+  document.getElementById('phaseHeader').innerHTML=`
+    <div class="phase-name" style="color:${ph.color}">${ph.icon} ${ph.name}</div>
+    <div class="phase-desc">${ph.desc}</div>
+    <div class="pivots-row">${pivotBadges}</div>
+    <div class="phase-weeks-row" style="margin-top:10px">
+      <span style="font-size:11px;color:var(--text3);align-self:center;">Semaine :</span>
+      ${ph.weeks.map((w,i)=>`
+        <button class="wk-btn ${state.week===i+1?'active':''}" onclick="selectWeek(${i+1})">
+          Sem ${w} ${state.week===i+1?'✓':''}
+        </button>`).join('')}
+    </div>`;
+
+  // Physical exercises
+  const phys=PHYSIQUE[state.phase];
+  if(phys){
+    const lv=phys.levels[state.level];
+    document.getElementById('physiqueSection').innerHTML=`
+      <div class="physique-section">
+        <div class="physique-header">
+          <span style="font-size:20px">💪</span>
+          <span class="physique-title">${phys.label}</span>
+          <span class="physique-badge">${lv.intensity}</span>
+          <span class="physique-badge" style="background:rgba(6,182,212,.12);border-color:rgba(6,182,212,.3);color:#06b6d4;">⏱ ${lv.dur}</span>
+        </div>
+        <div class="physique-content">${lv.desc}</div>
+        <ul class="physique-steps">${lv.steps.map(s=>`<li>${s}</li>`).join('')}</ul>
+        <div style="margin-top:10px">
+          <button class="btn" style="border-color:#10b981;color:#10b981" onclick="openTimerForEx('Exercice physique',parseInt('${lv.dur}'))">
+            ⏱ Lancer le timer
+          </button>
+        </div>
+      </div>`;
+  }
+
+  // Schedule
+  const sched=SCHEDULES[state.phase]?.[state.week]||[];
+  document.getElementById('scheduleList').innerHTML=sched.map(s=>`
+    <div class="sched-row">
+      <div class="sched-time">${s.t}</div>
+      <div class="sched-block ${s.type==='ex'?'ex':''} ${s.type==='physique'?'ex':''}  ${s.type==='sleep'?'sleep':''}"
+        style="${s.type==='physique'?'border-left:3px solid #10b981':s.type==='ex'?'border-left-color:var(--phase-color)':''}">
+        <div class="sched-label">${s.l}</div>
+        ${s.d?`<div class="sched-dur">⏱ ${s.d}</div>`:''}
+        ${s.ex?`<div style="margin-top:4px"><button class="btn btn-phase" style="--phase-color:${ph.color}" onclick="scrollToEx('${s.ex}')">→ Voir l'exercice</button></div>`:''}
+        ${s.type==='physique'?`<div style="margin-top:4px"><button class="btn" style="border-color:#10b981;color:#10b981;font-size:11px" onclick="document.getElementById('physiqueSection').scrollIntoView({behavior:'smooth'})">→ Voir le détail</button></div>`:''}
+      </div>
+    </div>`).join('');
+
+  // Exercises
+  document.getElementById('exercisesGrid').innerHTML=ph.exercises.map(ex=>buildExCard(ex,ph)).join('');
+  loadExNotes(ph.exercises);
+}
+
+function buildExCard(ex,ph){
+  const done=state.completedExercises[ex.id];
+  const lvNote=ex.levels?ex.levels[state.level]:'';
+  const diffBadge={1:"⭐ Découverte",2:"⭐⭐ Pratique",3:"⭐⭐⭐ Maîtrise",4:"🏆 Expert"}[state.level];
+  const meta=EX_META[ex.id]||{};
+  const signs=meta.signs||[];
+  const faqs=meta.faq||[];
+  const variante=meta.variante||'';
+
+  const signsHtml=signs.length?`
+    <div class="ex-signs">
+      <div class="ex-signs-title">📈 Signes que l'exercice fonctionne</div>
+      <ul>${signs.map(s=>`<li>${s}</li>`).join('')}</ul>
+    </div>`:'';
+
+  const faqHtml=faqs.length?`
+    <div class="ex-faq">
+      <div class="ex-faq-title">❓ Questions fréquentes</div>
+      ${faqs.map((f,i)=>`
+        <div class="faq-item" id="faq-${ex.id}-${i}">
+          <div class="faq-q" onclick="toggleFaq('faq-${ex.id}-${i}')">
+            <span>${f.q}</span><span class="faq-arrow">▼</span>
+          </div>
+          <div class="faq-a">${f.a}</div>
+        </div>`).join('')}
+    </div>`:'';
+
+  const varianteHtml=variante?`
+    <div class="ex-variante"><strong>🔄 Si bloqué — variante :</strong> ${variante}</div>`:'';
+
+  return `
+  <div class="ex-card ${done?'done-card':''}" id="ex-${ex.id}">
+    <div class="ex-head" onclick="toggleEx('${ex.id}')">
+      <div class="ex-head-l">
+        <div class="ex-ico" style="background:color-mix(in srgb,${ph.color} 15%,var(--card2))">${ex.ico}</div>
+        <div>
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-meta">⏱ ${ex.dur} min &nbsp;·&nbsp; ${diffBadge} ${done?'&nbsp;·&nbsp; ✅ Complété':''}</div>
+        </div>
+      </div>
+      <div class="ex-chev">▼</div>
+    </div>
+    <div class="ex-body">
+      <p class="ex-instr">${ex.instr}</p>
+      ${lvNote?`<div class="level-diff-note"><strong>${diffBadge} — Pour ce niveau :</strong> ${lvNote}</div>`:''}
+      <ul class="ex-steps">
+        ${ex.steps.map((s,i)=>`<li><span class="sn" style="background:${ph.color}">${i+1}</span><span>${s}</span></li>`).join('')}
+      </ul>
+      ${signsHtml}
+      ${faqHtml}
+      ${varianteHtml}
+      <div class="ex-toolbar" style="margin-top:12px">
+        <button class="btn" onclick="openTimerForEx('${ex.name}',${ex.dur})">⏱ ${ex.dur} min</button>
+        <button class="btn btn-phase" style="--phase-color:${ph.color}" onclick="toggleComplete('${ex.id}',this)">
+          ${done?'↩ Non fait':'✅ Marquer fait'}
+        </button>
+      </div>
+      <textarea class="ex-notes" id="notes-${ex.id}" placeholder="Notes sur cet exercice…"
+        onblur="saveNote('${ex.id}',this.value)"></textarea>
+      <div class="audio-bar" id="audio-${ex.id}">
+        <div class="waveform" id="wf-${ex.id}">
+          ${Array(8).fill('<div class="wb"></div>').join('')}
+        </div>
+        <span class="audio-status" id="as-${ex.id}">Enregistrement vocal</span>
+        <button class="btn" id="recBtn-${ex.id}" onclick="toggleRecording('${ex.id}')">🎙 Enregistrer</button>
+      </div>
+      <div class="recordings-list" id="recs-${ex.id}"></div>
+    </div>
+  </div>`;
+}
+
+function toggleEx(id){
+  const card=document.getElementById('ex-'+id);
+  card.classList.toggle('open');
+  if(card.classList.contains('open'))loadRecordings(id);
+}
+
+function toggleFaq(id){
+  const el=document.getElementById(id);
+  if(el)el.classList.toggle('open');
+}
+
+function scrollToEx(id){
+  const el=document.getElementById('ex-'+id);
+  if(el){el.scrollIntoView({behavior:'smooth',block:'center'});if(!el.classList.contains('open'))el.querySelector('.ex-head').click();}
+}
+
+async function toggleComplete(id,btn){
+  state.completedExercises[id]=!state.completedExercises[id];
+  await saveState();
+  const meta=document.querySelector(`#ex-${id} .ex-meta`);
+  const done=state.completedExercises[id];
+  if(meta)meta.innerHTML=`⏱ ${PHASES.flatMap(p=>p.exercises).find(e=>e.id===id)?.dur||0} min ${done?'· ✅ Complété':''}`;
+  btn.textContent=done?'↩ Marquer non fait':'✅ Marquer fait';
+  showToast(done?'✅ Exercice complété !':'↩ Marqué non fait');
+  buildCalendar();
+}
+
+async function saveNote(id,val){
+  await dbSet('notes',id,val);
+}
+
+async function loadExNotes(exercises){
+  for(const ex of exercises){
+    const val=await dbGet('notes',ex.id);
+    const el=document.getElementById('notes-'+ex.id);
+    if(el&&val)el.value=val;
+  }
+}
+
+// ══════════════════════════════════════
+// AUDIO RECORDING
+// ══════════════════════════════════════
+let mediaRecorder=null, audioChunks=[], currentRecExId=null;
+
+async function toggleRecording(exId){
+  const btn=document.getElementById('recBtn-'+exId);
+  const wf=document.getElementById('wf-'+exId);
+  const as=document.getElementById('as-'+exId);
+  if(mediaRecorder&&mediaRecorder.state==='recording'){
+    mediaRecorder.stop();
+    btn.textContent='🎙 Enregistrer';
+    wf.classList.remove('recording');
+    as.textContent='Enregistrement vocal';
+  } else {
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      audioChunks=[];
+      currentRecExId=exId;
+      mediaRecorder=new MediaRecorder(stream);
+      mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};
+      mediaRecorder.onstop=async()=>{
+        const blob=new Blob(audioChunks,{type:'audio/webm'});
+        const reader=new FileReader();
+        reader.onload=async()=>{
+          const b64=reader.result;
+          const id=await dbAdd('recordings',{exId:currentRecExId,date:new Date().toISOString(),data:b64});
+          loadRecordings(currentRecExId);
+        };
+        reader.readAsDataURL(blob);
+        stream.getTracks().forEach(t=>t.stop());
+      };
+      mediaRecorder.start();
+      btn.textContent='⏹ Arrêter';
+      wf.classList.add('recording');
+      as.textContent='● Enregistrement en cours…';
+    }catch(e){showToast('Accès micro refusé');}
+  }
+}
+
+async function loadRecordings(exId){
+  const all=await dbGetAll('recordings');
+  const list=document.getElementById('recs-'+exId);
+  if(!list)return;
+  const mine=all.filter(r=>r.exId===exId);
+  list.innerHTML=mine.map(r=>{
+    const d=new Date(r.date);
+    const label=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})
+      +' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="rec-item">🎙 ${label}<audio src="${r.data}" controls></audio></div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// CALENDAR
+// ══════════════════════════════════════
+function buildCalendar(){
+  const today=getCurrentDay();
+  const grid=document.getElementById('calGrid');
+  const days=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  let html=days.map(d=>`<div class="cal-dh">${d}</div>`).join('');
+
+  const startDate=new Date(START_DATE);
+  const startDow=(startDate.getDay()+6)%7; // Mon=0
+  for(let i=0;i<startDow;i++)html+=`<div></div>`;
+
+  const phColors=['#f43f5e','#8b5cf6','#06b6d4','#f59e0b','#10b981','#e8a020'];
+  const phClass=['ph1','ph2','ph3','ph4','ph5','ph6'];
+
+  for(let d=1;d<=90;d++){
+    const phIdx=Math.floor((d-1)/15);
+    const phCls=phClass[Math.min(phIdx,5)];
+    let cls=phCls;
+    let icon='';
+    if(d===today){cls+=` today`;icon='📌';}
+    else if(d<today){
+      const done=state.calProgress[d];
+      cls+=done?' done':' missed';
+      icon=done?'✓':'✕';
+    } else cls+=' future';
+    html+=`<div class="cal-d ${cls}" onclick="toggleCalDay(${d})">
+      <span class="dn">${d}</span>
+      <span class="dk">${icon}</span>
+    </div>`;
+  }
+  grid.innerHTML=html;
+
+  // Stats
+  const past=Array.from({length:today-1},(_,i)=>i+1);
+  const done=past.filter(d=>state.calProgress[d]).length;
+  const missed=past.length-done;
+  const pct=past.length?Math.round(done/past.length*100):0;
+  document.getElementById('statsRow').innerHTML=`
+    <div class="stat-card"><div class="stat-v">${today}</div><div class="stat-l">Jour actuel</div></div>
+    <div class="stat-card"><div class="stat-v">${done}</div><div class="stat-l">Jours complétés</div></div>
+    <div class="stat-card"><div class="stat-v">${missed}</div><div class="stat-l">Jours manqués</div></div>
+    <div class="stat-card"><div class="stat-v">${pct}%</div><div class="stat-l">Taux de pratique</div></div>`;
+}
+
+async function toggleCalDay(d){
+  const today=getCurrentDay();
+  if(d>=today)return;
+  state.calProgress[d]=!state.calProgress[d];
+  await saveState();
+  buildCalendar();
+  showToast(state.calProgress[d]?`Jour ${d} marqué ✅`:`Jour ${d} non pratiqué`);
+}
+
+// ══════════════════════════════════════
+// VALUES WHEEL
+// ══════════════════════════════════════
+function buildValuesWheel(){
+  const c=document.getElementById('valuesControls');
+  c.innerHTML=VALUES_DOMAINS.map((name,i)=>`
+    <div class="val-card">
+      <div class="val-head">
+        <span class="val-name">${name}</span>
+        <span class="val-score" id="vs-imp-${i}">${state.valImportance[i]}</span>
+      </div>
+      <input type="range" min="0" max="10" value="${state.valImportance[i]}"
+        id="vr-imp-${i}"
+        oninput="updateVal(${i},'importance',this.value)">
+      <div class="val-head" style="margin-top:6px">
+        <span class="val-name" style="font-size:11px;color:var(--text3)">Satisfaction</span>
+        <span class="val-score" id="vs-sat-${i}" style="font-size:12px;color:var(--text2)">${state.valSatisfaction[i]}</span>
+      </div>
+      <input type="range" min="0" max="10" value="${state.valSatisfaction[i]}"
+        id="vr-sat-${i}"
+        oninput="updateVal(${i},'satisfaction',this.value)">
+    </div>`).join('');
+}
+
+function setValMode(m,btn){
+  state.valMode=m;
+  document.querySelectorAll('.vm-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  drawValues();
+}
+
+function updateVal(i,type,val){
+  val=parseInt(val);
+  if(type==='importance'){
+    state.valImportance[i]=val;
+    document.getElementById('vs-imp-'+i).textContent=val;
+  } else {
+    state.valSatisfaction[i]=val;
+    document.getElementById('vs-sat-'+i).textContent=val;
+  }
+  saveState();
+  drawValues();
+}
+
+function drawValues(){
+  const canvas=document.getElementById('vc');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const cx=W/2,cy=H/2,R=Math.min(W,H)/2-40;
+  const N=10;
+  const step=2*Math.PI/N;
+  ctx.clearRect(0,0,W,H);
+
+  // Background web
+  for(let r=1;r<=5;r++){
+    ctx.beginPath();
+    for(let i=0;i<N;i++){
+      const ang=-Math.PI/2+i*step;
+      const rr=(r/5)*R;
+      const x=cx+rr*Math.cos(ang),y=cy+rr*Math.sin(ang);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle='rgba(255,255,255,0.06)';
+    ctx.stroke();
+  }
+
+  // Spokes
+  for(let i=0;i<N;i++){
+    const ang=-Math.PI/2+i*step;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+R*Math.cos(ang),cy+R*Math.sin(ang));
+    ctx.strokeStyle='rgba(255,255,255,0.06)';
+    ctx.stroke();
+  }
+
+  // Draw importance
+  if(state.valMode!=='satisfaction'){
+    ctx.beginPath();
+    for(let i=0;i<N;i++){
+      const ang=-Math.PI/2+i*step;
+      const rr=(state.valImportance[i]/10)*R;
+      const x=cx+rr*Math.cos(ang),y=cy+rr*Math.sin(ang);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.fillStyle='rgba(232,160,32,0.18)';
+    ctx.fill();
+    ctx.strokeStyle='rgba(232,160,32,0.8)';
+    ctx.lineWidth=2;
+    ctx.stroke();
+  }
+
+  // Draw satisfaction
+  if(state.valMode!=='importance'){
+    ctx.beginPath();
+    for(let i=0;i<N;i++){
+      const ang=-Math.PI/2+i*step;
+      const rr=(state.valSatisfaction[i]/10)*R;
+      const x=cx+rr*Math.cos(ang),y=cy+rr*Math.sin(ang);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.fillStyle='rgba(0,201,177,0.12)';
+    ctx.fill();
+    ctx.strokeStyle='rgba(0,201,177,0.7)';
+    ctx.lineWidth=2;
+    ctx.stroke();
+  }
+
+  // Labels
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  for(let i=0;i<N;i++){
+    const ang=-Math.PI/2+i*step;
+    const lr=R+22;
+    const x=cx+lr*Math.cos(ang),y=cy+lr*Math.sin(ang);
+    ctx.font='bold 11px DM Sans';
+    ctx.fillStyle='rgba(230,234,248,0.7)';
+    const words=VALUES_DOMAINS[i].split('&');
+    if(words.length>1){
+      ctx.fillText(words[0].trim(),x,y-6);
+      ctx.fillText('&'+words[1].trim(),x,y+6);
+    }else{
+      ctx.fillText(VALUES_DOMAINS[i],x,y);
+    }
+  }
+
+  // Legend
+  if(state.valMode==='both'){
+    ctx.textAlign='left';
+    ctx.font='11px DM Sans';
+    ctx.fillStyle='rgba(232,160,32,0.8)';ctx.fillText('── Importance',10,H-24);
+    ctx.fillStyle='rgba(0,201,177,0.7)';ctx.fillText('── Satisfaction',10,H-10);
+  }
+}
+
+// ══════════════════════════════════════
+// URGENCES
+// ══════════════════════════════════════
+function buildUrgences(){
+  const g=document.getElementById('urgenceGrid');
+  g.innerHTML=URGENCES_PROTOCOLS.map(p=>`
+    <div class="proto-card">
+      <div class="proto-head" style="border-bottom:1px solid ${p.color}22;background:color-mix(in srgb,${p.color} 6%,var(--card))">
+        <div class="proto-ico">${p.ico}</div>
+        <div>
+          <div class="proto-name" style="color:${p.color}">${p.name}</div>
+          <div class="proto-sub">${p.sub}</div>
+        </div>
+      </div>
+      <div class="proto-body">
+        ${p.steps.map(s=>`
+          <div class="proto-step">
+            <div class="psn" style="background:${p.color};color:#000">${s.n}</div>
+            <div class="pst"><strong>${s.t}</strong><br>${s.b}</div>
+          </div>`).join('')}
+        <div style="margin-top:12px">
+          <button class="btn" onclick="openTimerForEx('${p.name}',5)">⏱ Timer 5 min</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════
+// JOURNAL
+// ══════════════════════════════════════
+const EMOTIONS_LIST=["Anxieux","Triste","Colère","Frustré","Honte","Peur","Épuisé","Calme","Reconnaissant","Motivé","Fier","Serein","Soulagé","Joyeux"];
+let selectedEmotions=[];
+
+function buildJournal(){
+  const now=new Date();
+  document.getElementById('journalDate').textContent=
+    now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  document.getElementById('emoChips').innerHTML=EMOTIONS_LIST.map(e=>`
+    <div class="emo-chip" onclick="toggleEmo('${e}',this)">${e}</div>`).join('');
+
+  loadJournalEntries();
+  loadTodayJournal();
+}
+
+function toggleEmo(e,el){
+  el.classList.toggle('sel');
+  if(selectedEmotions.includes(e)) selectedEmotions=selectedEmotions.filter(x=>x!==e);
+  else selectedEmotions.push(e);
+}
+
+async function saveJournalEntry(){
+  const entry={
+    date:new Date().toDateString(),
+    mood:document.getElementById('moodSlider').value,
+    emotions:selectedEmotions,
+    dictateur:document.getElementById('jDictateur').value,
+    acceptation:document.getElementById('jAcceptation').value,
+    valeur:document.getElementById('jValeur').value,
+    apprentissage:document.getElementById('jApprentissage').value
+  };
+  await dbSet('journal',new Date().toDateString(),entry);
+  showToast('📖 Journal sauvegardé !');
+  loadJournalEntries();
+}
+
+async function loadTodayJournal(){
+  const e=await dbGet('journal',new Date().toDateString());
+  if(!e)return;
+  if(e.mood)document.getElementById('moodSlider').value=e.mood;
+  if(e.mood)document.getElementById('moodVal').textContent=e.mood;
+  if(e.emotions)e.emotions.forEach(em=>{
+    const chip=[...document.querySelectorAll('.emo-chip')].find(c=>c.textContent===em);
+    if(chip){chip.classList.add('sel');selectedEmotions.push(em);}
+  });
+  if(e.dictateur)document.getElementById('jDictateur').value=e.dictateur;
+  if(e.acceptation)document.getElementById('jAcceptation').value=e.acceptation;
+  if(e.valeur)document.getElementById('jValeur').value=e.valeur;
+  if(e.apprentissage)document.getElementById('jApprentissage').value=e.apprentissage;
+}
+
+async function loadJournalEntries(){
+  const all=await dbGetAll('journal');
+  const today=new Date().toDateString();
+  const past=all.filter(e=>e.key!==today).sort((a,b)=>new Date(b.key)-new Date(a.key));
+  document.getElementById('pastEntries').innerHTML=past.length?
+    `<div class="section-label" style="margin-top:0">Entrées précédentes</div>`+
+    past.map(e=>`
+      <div class="past-entry">
+        <div class="pe-date">${new Date(e.key||e.date||'').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}</div>
+        <div class="pe-text">Humeur ${e.value?.mood||'?'}/10 · ${(e.value?.emotions||[]).join(', ')||'—'}</div>
+        ${e.value?.apprentissage?`<div class="pe-text" style="margin-top:4px;font-style:italic">"${e.value.apprentissage.slice(0,120)}${e.value.apprentissage.length>120?'…':''}"</div>`:''}
+      </div>`).join(''):
+    `<div style="color:var(--text3);font-size:13px;text-align:center;padding:20px">Aucune entrée précédente</div>`;
+}
+
+// ══════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════
+let timerSec=0,timerMax=0,timerRunning=false,timerInterval=null,timerMode='countdown',timerExLabel='';
+
+function openTimer(label,min){
+  document.getElementById('timerModal').classList.add('open');
+  if(min){setTimerPreset(min);document.getElementById('timerExLbl').textContent=label||'Minuteur';}
+}
+function closeTimer(){document.getElementById('timerModal').classList.remove('open');}
+
+function openTimerForEx(name,min){
+  timerExLabel=name;
+  openTimer(name,min);
+}
+
+function setTimerPreset(min){
+  if(min===0){
+    timerMode='stopwatch';
+    timerSec=0;timerMax=0;
+    document.getElementById('timerExLbl').textContent='Chronomètre ↑';
+  } else {
+    timerMode='countdown';
+    timerSec=min*60;timerMax=min*60;
+    document.getElementById('timerExLbl').textContent=timerExLabel||'Minuteur '+min+' min';
+  }
+  resetTimer(false);
+  updateTimerDisplay();
+}
+
+function toggleTimer(){
+  if(timerRunning){
+    clearInterval(timerInterval);timerRunning=false;
+    document.getElementById('timerStartBtn').textContent='▶ Démarrer';
+    document.getElementById('timerMini').classList.remove('running');
+  } else {
+    timerRunning=true;
+    document.getElementById('timerStartBtn').textContent='⏸ Pause';
+    document.getElementById('timerMini').classList.add('running');
+    timerInterval=setInterval(()=>{
+      if(timerMode==='countdown'){
+        if(timerSec>0){timerSec--;updateTimerDisplay();}
+        else{clearInterval(timerInterval);timerRunning=false;playDone();document.getElementById('timerStartBtn').textContent='▶ Démarrer';}
+      } else {
+        timerSec++;updateTimerDisplay();
+      }
+    },1000);
+  }
+}
+
+function resetTimer(keepLabel=true){
+  clearInterval(timerInterval);timerRunning=false;
+  if(timerMode==='countdown')timerSec=timerMax;else timerSec=0;
+  document.getElementById('timerStartBtn').textContent='▶ Démarrer';
+  document.getElementById('timerMini').classList.remove('running');
+  updateTimerDisplay();
+}
+
+function fmt(s){const m=Math.floor(Math.abs(s)/60);const ss=Math.abs(s)%60;return`${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;}
+
+function updateTimerDisplay(){
+  document.getElementById('timerDisplay').textContent=fmt(timerSec);
+  // Arc
+  const arc=document.getElementById('timerArc');
+  const CIRC=408.41;
+  let pct=1;
+  if(timerMode==='countdown'&&timerMax>0)pct=timerSec/timerMax;
+  arc.style.strokeDashoffset=CIRC*(1-pct);
+  arc.style.stroke=timerSec===0&&timerMode==='countdown'?'#10b981':'var(--gold)';
+}
+
+function updateTimerMini(){
+  if(timerRunning)document.getElementById('timerMini').textContent=fmt(timerSec);
+  else document.getElementById('timerMini').textContent=fmt(timerSec);
+}
+
+function playDone(){
+  showToast('⏰ Temps écoulé !');
+  try{const ctx=new AudioContext();const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=880;g.gain.setValueAtTime(0.3,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+1);o.start();o.stop(ctx.currentTime+1);}catch(e){}
+}
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+let toastTimeout;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ══════════════════════════════════════
+// START
+// ══════════════════════════════════════
+init().catch(console.error);
+</script>
+</body>
+</html>
