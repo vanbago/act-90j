@@ -1297,8 +1297,7 @@ const SCENARIOS = [
 {id:"stress",label:"😰 Stress",color:"#f59e0b",notice:"Sessions réduites à 5-10 min. Priorité : Respiration 4-7-8 → Défusion rapide (Milk Milk Milk). Maximum 2 exercices."},
 {id:"crise",label:"🚨 Crise",color:"#ef4444",notice:"Mode urgence activé. Rendez-vous dans l'onglet Urgences → Protocole Barlow immédiat. Un seul objectif : traverser la crise."},
 {id:"maladie",label:"🤒 Maladie",color:"#8b5cf6",notice:"Vous êtes alité(e). Scan corporel uniquement, 5-10 min allongé(e). Soyez doux(ce) avec vous-même."},
-{id:"coupure",label:"🔦 Coupure",color:"#6b7280",notice:"Sans électricité : exercices écrits uniquement. Méditation libre, journal sur papier. Pas d'audio, pas d'écran."},
-{id:"biere",label:"🍺 Envie bière",color:"#f97316",notice:"PRIORITÉ ABSOLUE : Urge Surfing maintenant (onglet Urgences). Puis Milk Milk Milk avec le mot 'alcool'. Appelez quelqu'un si l'envie persiste > 20 min."}
+{id:"coupure",label:"🔦 Coupure",color:"#6b7280",notice:"Sans électricité : exercices écrits uniquement. Méditation libre, journal sur papier. Pas d'audio, pas d'écran."}
 ];
 
 const SCHEDULES = {
@@ -1508,13 +1507,29 @@ steps:[
 {n:4,t:"A — AGIR",b:"<strong>Première action dans les 5 minutes</strong>. Une seule. Le mouvement rompt la paralysie."},
 {n:5,t:"S — SATISFACTION",b:"<strong>Bilan</strong> : qu'avez-vous appris ? Même si imparfait, vous avez agi."}
 ]},
-{id:"u4",name:"Envie de Boire",sub:"Protocole Urge Surfing",ico:"🍺",color:"#f97316",
+{id:"u4",name:"Envie de se Disperser",sub:"Protocole Acceptation & Valeurs",ico:"📱",color:"#8b5cf6",
 steps:[
-{n:1,t:"IDENTIFIER",b:"Nommez : <strong>'Je remarque une envie de boire.'</strong> Pas 'J'ai besoin de boire' — nuance cruciale."},
-{n:2,t:"LOCALISER",b:"<strong>Où est l'envie dans votre corps ?</strong> Ventre, gorge, poitrine ? Quelle forme, texture, chaleur ?"},
-{n:3,t:"SURFER",b:"<strong>Suivez la vague</strong> sans céder. Elle monte, atteint un pic (7-10 min) puis descend TOUJOURS."},
-{n:4,t:"MILK",b:"Répétez <strong>'alcool'</strong> très vite pendant 45 sec. Délitéralisez le mot. Réduisez son emprise."},
-{n:5,t:"AGIR",b:"<strong>Appelez quelqu'un maintenant</strong>. Changez d'espace physique. Engagez une action valorisée."}
+{n:1,t:"PAUSE",b:"<strong>Stop net.</strong> Ferme l'écran ou pose le téléphone. Ce geste seul crée une distance."},
+{n:2,t:"NOMMER",b:"Dis : <strong>'Je remarque une envie de fuir quelque chose.'</strong> Qu'est-ce que tu évites en ce moment ?"},
+{n:3,t:"SURFER",b:"<strong>L'envie est une vague</strong> — observe-la monter sans la satisfaire. Elle redescend en 7-10 min."},
+{n:4,t:"DÉFUSION",b:"<strong>'Mon cerveau dit que je dois m'échapper.'</strong> C'est une pensée, pas un ordre."},
+{n:5,t:"VALEUR",b:"<strong>Une action concrète maintenant</strong> qui honore une valeur — même 5 minutes. Le mouvement rompt le cycle."}
+]},
+{id:"u5",name:"Envie Compulsive",sub:"Protocole Urge Surfing",ico:"🔥",color:"#f97316",
+steps:[
+{n:1,t:"STOP",b:"<strong>Lève-toi immédiatement.</strong> Change de pièce. Le corps en mouvement coupe le circuit automatique."},
+{n:2,t:"NOMMER",b:"Dis : <strong>'Je remarque une envie compulsive.'</strong> Localise-la dans ton corps — où exactement ?"},
+{n:3,t:"SURFER",b:"<strong>Observe la vague sans y céder.</strong> Elle monte (5-10 min) puis descend TOUJOURS si tu n'agis pas."},
+{n:4,t:"MILK",b:"Répète le mot déclencheur <strong>très vite pendant 45 sec.</strong> Il perd son emprise émotionnelle."},
+{n:5,t:"AGIR",b:"<strong>Action physique immédiate</strong> : 20 pompes, une douche froide, appelle quelqu'un. Brise le circuit."}
+]},
+{id:"u6",name:"Peur de l'Échec",sub:"Protocole Défusion & Valeurs",ico:"⚡",color:"#f43f5e",
+steps:[
+{n:1,t:"NOMMER",b:"<strong>'Mon cerveau prédit que je vais échouer.'</strong> Une prédiction n'est pas un fait — nomme-la."},
+{n:2,t:"DÉFUSION",b:"Ajoute : <strong>'Je remarque la pensée que...'</strong> Tu vois la pensée sans en être la victime."},
+{n:3,t:"EXAMINER",b:"<strong>Combien de fois cette peur s'est vérifiée ?</strong> Le cerveau catastrophise — les faits sont moins sombres."},
+{n:4,t:"VALEUR",b:"<strong>Agir malgré la peur est cohérent avec quelle valeur ?</strong> Courage ? Croissance ? Authenticité ?"},
+{n:5,t:"UN PAS",b:"<strong>5 secondes. Un seul pas.</strong> Avant que le cerveau finisse son discours de peur — agis."}
 ]}
 ];
 
