@@ -2333,7 +2333,22 @@ function updateTimerMini(){
 
 function playDone(){
   showToast('⏰ Temps écoulé !');
-  try{const ctx=new AudioContext();const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=880;g.gain.setValueAtTime(0.3,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+1);o.start();o.stop(ctx.currentTime+1);}catch(e){}
+  try{
+    const ctx=new AudioContext();
+    // 3 notes de cloche : mi - sol - do (sonnerie douce)
+    [[659,0],[784,0.35],[1047,0.7]].forEach(([freq,delay])=>{
+      const o=ctx.createOscillator();
+      const g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type='sine';
+      o.frequency.value=freq;
+      const t=ctx.currentTime+delay;
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.4,t+0.01);
+      g.gain.exponentialRampToValueAtTime(0.001,t+1.2);
+      o.start(t);o.stop(t+1.2);
+    });
+  }catch(e){}
 }
 
 // ══════════════════════════════════════
