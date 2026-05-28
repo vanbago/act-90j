@@ -320,13 +320,46 @@ input[type=range]{width:100%;accent-color:var(--gold);cursor:pointer;height:3px;
 .pt-body{font-size:13px;color:var(--text2);line-height:1.7;}
 .pt-pivots{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
 
+/* DAY HERO */
+.day-hero{text-align:center;padding:28px 0 18px;}
+.day-number{font-family:'Playfair Display',serif;font-size:64px;font-weight:700;color:var(--gold);line-height:1;}
+.day-phase-tag{font-size:13px;color:var(--text2);margin-top:8px;letter-spacing:.3px;}
+
+/* ACT GOAL */
+.act-goal{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.22);border-left:4px solid #ef4444;border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;}
+.act-goal-title{font-size:11px;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:.9px;margin-bottom:8px;}
+.act-goal-text{font-size:14px;color:var(--text);line-height:1.75;}
+
+/* PIVOT CARD */
+.pivot-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:12px;}
+.pivot-card-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:12px;}
+.pivot-expl{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:12px;}
+.pivot-example{background:var(--card2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:10px;font-size:13px;color:var(--text2);line-height:1.65;}
+.pivot-example strong,.pivot-help strong{color:var(--text);}
+.pivot-help{font-size:13px;color:var(--text2);line-height:1.65;}
+
+/* EX CHECK CARDS */
+.ex-check-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:10px;transition:border-color .2s,background .2s;}
+.ex-check-card.checked{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.05);}
+.ex-check-row{display:flex;gap:16px;align-items:flex-start;}
+.ex-check-row input[type=checkbox]{width:24px;height:24px;flex-shrink:0;margin-top:3px;accent-color:#10b981;cursor:pointer;}
+.ex-check-info{flex:1;}
+.ex-check-title{font-size:16px;font-weight:700;margin-bottom:8px;line-height:1.3;}
+.ex-check-title span{font-size:12px;color:var(--text3);font-weight:400;}
+.ex-check-desc{font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:12px;}
+.ex-check-steps{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.ex-check-steps li{display:flex;gap:10px;font-size:13px;color:var(--text2);align-items:flex-start;line-height:1.5;}
+.ex-timer-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:6px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:12px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.ex-timer-btn:hover{border-color:var(--gold);color:var(--gold);}
+.ex-day-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;margin:22px 0 12px;}
+
 @media(max-width:640px){
   .hexaflex-grid{grid-template-columns:repeat(2,1fr);}
   .phase-selector{grid-template-columns:repeat(3,1fr);}
   .urgence-grid{grid-template-columns:1fr;}
   .values-wrap{grid-template-columns:1fr;}
   .stats-row{grid-template-columns:repeat(2,1fr);}
-  .controls-bar{flex-direction:column;align-items:flex-start;}
+  .day-number{font-size:48px;}
 }
 </style>
 </head>
@@ -359,41 +392,8 @@ input[type=range]{width:100%;accent-color:var(--gold);cursor:pointer;height:3px;
 
 <!-- ══════════════════ PROGRAMME ══════════════════ -->
 <section class="tab-section active" id="tab-programme">
-
-  <!-- Phase selector -->
   <div class="phase-selector" id="phaseSelector"></div>
-
-  <!-- Controls -->
-  <div class="controls-bar">
-    <div class="scenario-selector" id="scenarioSelector"></div>
-    <div class="level-selector" id="levelSelector">
-      <button class="lv-btn active" onclick="setLevel(1,this)" title="Niveau Découverte">⭐</button>
-      <button class="lv-btn" onclick="setLevel(2,this)" title="Niveau Pratique">⭐⭐</button>
-      <button class="lv-btn" onclick="setLevel(3,this)" title="Niveau Maîtrise">⭐⭐⭐</button>
-      <button class="lv-btn" onclick="setLevel(4,this)" title="Niveau Expert">🏆</button>
-    </div>
-  </div>
-
-  <!-- Scenario notice -->
-  <div class="sc-notice" id="scNotice"></div>
-
-  <!-- Difficulty bar -->
-  <div class="diff-bar" id="diffBar"></div>
-
-  <!-- Phase header -->
-  <div class="phase-header" id="phaseHeader"></div>
-
-  <!-- Physical exercises -->
-  <div id="physiqueSection"></div>
-
-  <!-- Schedule -->
-  <div class="section-label">Planning du jour</div>
-  <div class="schedule-list" id="scheduleList"></div>
-
-  <!-- Exercises -->
-  <div class="section-label">Exercices psychologiques</div>
-  <div class="exercises-grid" id="exercisesGrid"></div>
-
+  <div id="programmeContent"></div>
 </section>
 
 <!-- ══════════════════ CALENDRIER ══════════════════ -->
@@ -1441,6 +1441,48 @@ const VALUES_DOMAINS = [
 
 const EMOTIONS = ["Anxieux","Triste","Colère","Frustré","Honte","Culpabilité","Peur","Confus","Seul","Épuisé","Calme","Reconnaissant","Motivé","Fier","Serein","Soulagé","Connecté","Joyeux"];
 
+const PHASE_GOALS = {
+  1:"Observer le Dictateur Intérieur — cette voix qui te juge sans relâche et t'impose des règles rigides. Aujourd'hui tu ne lui obéis pas. Tu l'observes. Tu le nommes. Tu reprends de la distance.",
+  2:"Une pensée n'est pas une réalité. Ton cerveau produit des milliers de mots par jour — tu n'es pas obligé de tous les croire. Aujourd'hui tu apprends à voir tes pensées sans en être la victime.",
+  3:"L'inconfort n'est pas un danger. L'anxiété, la peur, l'envie — ce sont des vagues, pas des murs. Aujourd'hui tu arrêtes de fuir et tu apprends à traverser.",
+  4:"Moins de réaction automatique, plus d'action structurée. Aujourd'hui tu entraînes ton cerveau à analyser clairement et à résoudre au lieu de tourner en rond.",
+  5:"Être vraiment là où tu es. Et clarifier ce qui compte pour toi — pas ce que les autres attendent, ce que toi tu veux vraiment de ta vie.",
+  6:"Tout s'intègre. Les 6 pivots ne sont plus des exercices isolés — ils deviennent une façon d'être. Aujourd'hui tu consolides ta transformation."
+};
+
+const PIVOT_DETAIL = {
+  presence:{
+    expl:"Le contact avec le moment présent, c'est être ici, maintenant — sans ruminer le passé ou anticiper l'avenir. Ton esprit voyage constamment dans le temps. Ce pivot t'entraîne à revenir.",
+    example:"Tu es au dîner avec ta famille mais ton cerveau rejoue une dispute du travail. La présence, c'est revenir à la table, à la voix de tes proches, à ce repas — maintenant. Pas demain, pas hier.",
+    help:"Tu arrêtes de rater ta vie en la vivant sur pilote automatique. Les moments difficiles deviennent plus gérables quand tu ne leur ajoutes pas toutes les peurs du futur en même temps."
+  },
+  defusion:{
+    expl:"La défusion, c'est apprendre à voir tes pensées comme des pensées — pas comme des vérités absolues. Ton cerveau produit des milliers de mots par jour. Tu n'es pas obligé de les croire tous.",
+    example:"Tu rates une réunion et ton cerveau dit 'je suis incompétent'. Avec la défusion, au lieu de le croire, tu apprends à dire : 'mon cerveau dit que je suis incompétent' — tu vois la pensée sans en être la victime.",
+    help:"Les pensées négatives perdent leur pouvoir sur toi. Tu peux agir selon tes valeurs même quand ton cerveau te prédit l'échec. La pensée est là — mais elle ne commande plus."
+  },
+  soi:{
+    expl:"Le soi-contexte, c'est le 'toi' stable qui observe tout — tes émotions, tes pensées, tes rôles. Comme le ciel qui reste là même quand les nuages passent.",
+    example:"Tu passes une mauvaise journée et tu penses 'je suis déprimé'. Le soi-contexte répond : 'je ressens de la dépression en ce moment' — il y a quelqu'un qui observe, et cet observateur n'est pas la dépression elle-même.",
+    help:"Tu arrêtes de te confondre avec tes états émotionnels. 'Je suis en colère' devient 'je ressens de la colère'. La nuance est énorme : tu peux traverser une tempête sans croire qu'elle te définit."
+  },
+  acceptation:{
+    expl:"L'acceptation, c'est accueillir les émotions difficiles sans leur déclarer la guerre. Pas les aimer — les laisser être là. Résister à une émotion l'amplifie. La laisser être la laisse passer.",
+    example:"Tu as une forte envie de boire en soirée. Au lieu de fuir ou de te battre contre l'envie, tu la laisses être là — tu l'observes monter puis redescendre comme une vague, sans avoir besoin d'y céder.",
+    help:"Tu économises une énergie énorme que tu mettais à fuir ou résister. Les émotions que tu acceptes durent moins longtemps. Celles que tu fuis reviennent plus fort."
+  },
+  valeurs:{
+    expl:"Les valeurs, ce ne sont pas des buts à atteindre — ce sont des directions de vie. Comme une boussole : tu ne l'atteins pas, tu t'en guides pour décider quoi faire maintenant.",
+    example:"La famille est une valeur. Ce n'est pas 'avoir une famille parfaite'. C'est appeler ta mère ce soir, être vraiment présent au repas, écouter sans regarder ton téléphone. Des actes concrets, maintenant.",
+    help:"Même dans les jours les plus difficiles, tu peux toujours faire un pas dans la direction de tes valeurs. Ça donne du sens quand rien ne va. Une boussole fonctionne même dans le brouillard."
+  },
+  actions:{
+    expl:"Les actions engagées, c'est agir en accord avec tes valeurs même quand c'est difficile, même quand tu n'as pas envie, même quand tu as peur. Pas attendre de se sentir prêt — agir et laisser le sentiment suivre.",
+    example:"Tu veux être en forme (valeur santé) mais tu n'as aucune envie de sortir courir. L'action engagée, c'est mettre les chaussures et partir quand même — pas parce que tu en as envie, mais parce que ça compte pour toi.",
+    help:"Tu arrêtes d'attendre la motivation pour agir. Tu agis maintenant, la motivation suit l'action — pas l'inverse. Chaque action selon tes valeurs renforce qui tu veux être."
+  }
+};
+
 const URGENCES_PROTOCOLS = [
 {id:"u1",name:"Crise de Pensées Intrusives",sub:"Protocole Dictateur",ico:"🧠",color:"#f43f5e",
 steps:[
@@ -1482,7 +1524,7 @@ steps:[
 let state = {
   phase: 1,
   week: 1,
-  level: 1,
+  level: 2,
   scenario: "normal",
   valMode: "importance",
   valImportance: [8,7,6,9,7,6,8,5,5,7],
@@ -1664,100 +1706,98 @@ function selectWeek(n){
   renderPhaseContent();
 }
 
+function getDayExercises(phase){
+  const day=getCurrentDay();
+  const exercises=phase.exercises;
+  // If this is the user's current phase, rotate 2 exercises based on day
+  if(day>=phase.days[0]&&day<=phase.days[1]){
+    const dayInPhase=day-phase.days[0]; // 0-indexed
+    const n=exercises.length;
+    const idx1=(dayInPhase*2)%n;
+    const idx2=(dayInPhase*2+1)%n;
+    return idx1===idx2?[exercises[idx1],exercises[(idx1+1)%n]]:[exercises[idx1],exercises[idx2]];
+  }
+  return exercises.slice(0,2);
+}
+
 function renderPhaseContent(){
   const ph=PHASES.find(p=>p.id===state.phase);
   if(!ph)return;
   document.documentElement.style.setProperty('--phase-color',ph.color);
 
-  // Scenario notice
-  const sc=SCENARIOS.find(s=>s.id===state.scenario);
-  const notice=document.getElementById('scNotice');
-  if(sc&&sc.notice){
-    notice.innerHTML='<strong>Mode '+sc.label+'</strong> — '+sc.notice;
-    notice.classList.add('show');
-  }else{notice.classList.remove('show');}
-
-  // Difficulty bar
-  const diffNames={1:"⭐ Découverte",2:"⭐⭐ Pratique",3:"⭐⭐⭐ Maîtrise",4:"🏆 Expert"};
-  const diffDescriptions={
-    1:"Sessions courtes 15-30 min. Exercices en version allégée. Idéal pour débuter ou journées difficiles.",
-    2:"Sessions 30-45 min. Volume et profondeur augmentés. Habitudes en construction.",
-    3:"Sessions 45-60 min. Exercices combinés. Compétences en consolidation.",
-    4:"Sessions 60-90 min. Protocoles complets. Intégration et défi personnel."
-  };
-  document.getElementById('diffBar').innerHTML=`
-    <span class="diff-label">Difficulté</span>
-    <div class="diff-levels">
-      ${[1,2,3,4].map(n=>`<span class="diff-lv ${state.level===n?'cur':''}">${diffNames[n]}</span>`).join('')}
-    </div>
-    <span class="diff-desc">— ${diffDescriptions[state.level]}</span>`;
-
-  // Phase header with pivots
-  const activePivots=ph.pivots||[];
-  const pivotBadges=ACT_PIVOTS.map(p=>`
-    <span class="pivot-badge ${activePivots.includes(p.id)?'active':'inactive'}"
-      style="color:${activePivots.includes(p.id)?p.color:'var(--text3)'};border-color:${activePivots.includes(p.id)?p.color+'44':'var(--border)'}">
-      ${p.icon} ${p.name}
-    </span>`).join('');
-
-  document.getElementById('phaseHeader').style.cssText=`border-color:${ph.color}33;background:color-mix(in srgb,${ph.color} 4%,var(--card))`;
-  document.getElementById('phaseHeader').innerHTML=`
-    <div class="phase-name" style="color:${ph.color}">${ph.icon} ${ph.name}</div>
-    <div class="phase-desc">${ph.desc}</div>
-    <div class="pivots-row">${pivotBadges}</div>
-    <div class="phase-weeks-row" style="margin-top:10px">
-      <span style="font-size:11px;color:var(--text3);align-self:center;">Semaine :</span>
-      ${ph.weeks.map((w,i)=>`
-        <button class="wk-btn ${state.week===i+1?'active':''}" onclick="selectWeek(${i+1})">
-          Sem ${w} ${state.week===i+1?'✓':''}
-        </button>`).join('')}
-    </div>`;
-
-  // Physical exercises
+  const day=getCurrentDay();
+  const isCurrentPhase=day>=ph.days[0]&&day<=ph.days[1];
+  const dayNum=isCurrentPhase?day:ph.days[0];
+  const todayExs=getDayExercises(ph);
   const phys=PHYSIQUE[state.phase];
-  if(phys){
-    const lv=phys.levels[state.level];
-    document.getElementById('physiqueSection').innerHTML=`
-      <div class="physique-section">
-        <div class="physique-header">
-          <span style="font-size:20px">💪</span>
-          <span class="physique-title">${phys.label}</span>
-          <span class="physique-badge">${lv.intensity}</span>
-          <span class="physique-badge" style="background:rgba(6,182,212,.12);border-color:rgba(6,182,212,.3);color:#06b6d4;">⏱ ${lv.dur}</span>
-        </div>
-        <div class="physique-content">${lv.desc}</div>
-        <ul class="physique-steps">${lv.steps.map(s=>`<li>${s}</li>`).join('')}</ul>
-        <div style="margin-top:10px">
-          <button class="btn" style="border-color:#10b981;color:#10b981" onclick="openTimerForEx('Exercice physique',parseInt('${lv.dur}'))">
-            ⏱ Lancer le timer
-          </button>
-        </div>
-      </div>`;
-  }
+  const physLv=phys?phys.levels[2]:null;
 
-  // Schedule
-  const sched=SCHEDULES[state.phase]?.[state.week]||[];
-  document.getElementById('scheduleList').innerHTML=sched.map(s=>`
-    <div class="sched-row">
-      <div class="sched-time">${s.t}</div>
-      <div class="sched-block ${s.type==='ex'?'ex':''} ${s.type==='physique'?'ex':''}  ${s.type==='sleep'?'sleep':''}"
-        style="${s.type==='physique'?'border-left:3px solid #10b981':s.type==='ex'?'border-left-color:var(--phase-color)':''}">
-        <div class="sched-label">${s.l}</div>
-        ${s.d?`<div class="sched-dur">⏱ ${s.d}</div>`:''}
-        ${s.ex?`<div style="margin-top:4px"><button class="btn btn-phase" style="--phase-color:${ph.color}" onclick="scrollToEx('${s.ex}')">→ Voir l'exercice</button></div>`:''}
-        ${s.type==='physique'?`<div style="margin-top:4px"><button class="btn" style="border-color:#10b981;color:#10b981;font-size:11px" onclick="document.getElementById('physiqueSection').scrollIntoView({behavior:'smooth'})">→ Voir le détail</button></div>`:''}
+  // Pivot details for this phase
+  const pivotCards=(ph.pivots||[]).map(pid=>{
+    const base=ACT_PIVOTS.find(p=>p.id===pid);
+    const detail=PIVOT_DETAIL[pid]||{};
+    if(!base)return'';
+    return`<div class="pivot-card" style="border-top:3px solid ${base.color}">
+      <div class="pivot-card-title" style="color:${base.color}">${base.icon} Pivot ACT — ${base.name}</div>
+      <div class="pivot-expl">${detail.expl||''}</div>
+      <div class="pivot-example"><strong>Exemple réel :</strong> ${detail.example||''}</div>
+      <div class="pivot-help"><strong style="color:var(--gold)">Comment ça t'aide :</strong> ${detail.help||''}</div>
+    </div>`;
+  }).join('');
+
+  // Physical checkbox
+  const physDone=!!state.completedExercises['physique'];
+  const physCard=phys?`<div class="ex-check-card${physDone?' checked':''}" id="ex-physique">
+    <div class="ex-check-row">
+      <input type="checkbox"${physDone?' checked':''} onchange="toggleComplete('physique',this)">
+      <div class="ex-check-info">
+        <div class="ex-check-title">💪 ${phys.label} <span>· ${physLv?physLv.dur:'25 min'}</span></div>
+        <div class="ex-check-desc">${physLv?physLv.desc:''}</div>
+        <ul class="ex-check-steps">${physLv?physLv.steps.map((s,i)=>`<li><span class="sn" style="background:${ph.color}">${i+1}</span><span>${s}</span></li>`).join(''):''}</ul>
+        <button class="ex-timer-btn" onclick="openTimerForEx('Exercice physique',${physLv?parseInt(physLv.dur):25})" type="button">⏱ Timer</button>
       </div>
-    </div>`).join('');
+    </div>
+  </div>`:'';
 
-  // Exercises
-  document.getElementById('exercisesGrid').innerHTML=ph.exercises.map(ex=>buildExCard(ex,ph)).join('');
-  loadExNotes(ph.exercises);
+  // Psychological exercise checkboxes
+  const exCards=todayExs.map(ex=>{
+    const done=!!state.completedExercises[ex.id];
+    return`<div class="ex-check-card${done?' checked':''}" id="ex-${ex.id}">
+      <div class="ex-check-row">
+        <input type="checkbox"${done?' checked':''} onchange="toggleComplete('${ex.id}',this)">
+        <div class="ex-check-info">
+          <div class="ex-check-title">${ex.ico} ${ex.name} <span>· ${ex.dur} min</span></div>
+          <div class="ex-check-desc">${ex.instr}</div>
+          <ul class="ex-check-steps">${ex.steps.map((s,i)=>`<li><span class="sn" style="background:${ph.color}">${i+1}</span><span>${s}</span></li>`).join('')}</ul>
+          <button class="ex-timer-btn" onclick="openTimerForEx('${ex.name}',${ex.dur})" type="button">⏱ Timer</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('programmeContent').innerHTML=`
+    <div class="day-hero">
+      <div class="day-number">Jour ${dayNum}</div>
+      <div class="day-phase-tag">${ph.icon} ${ph.name}</div>
+    </div>
+    <div class="act-goal">
+      <div class="act-goal-title">🎯 Objectif du jour</div>
+      <div class="act-goal-text">${PHASE_GOALS[ph.id]||ph.desc}</div>
+    </div>
+    ${pivotCards}
+    <div class="ex-day-label">Exercices du jour</div>
+    ${physCard}
+    ${exCards}`;
+}
+
+function addMinutes(timeStr,mins){
+  const [h,m]=timeStr.split(':').map(Number);
+  const total=h*60+m+mins;
+  return String(Math.floor(total/60)).padStart(2,'0')+':'+String(total%60).padStart(2,'0');
 }
 
 function buildExCard(ex,ph){
   const done=state.completedExercises[ex.id];
-  const lvNote=ex.levels?ex.levels[state.level]:'';
-  const diffBadge={1:"⭐ Découverte",2:"⭐⭐ Pratique",3:"⭐⭐⭐ Maîtrise",4:"🏆 Expert"}[state.level];
   const meta=EX_META[ex.id]||{};
   const signs=meta.signs||[];
   const faqs=meta.faq||[];
@@ -1791,14 +1831,13 @@ function buildExCard(ex,ph){
         <div class="ex-ico" style="background:color-mix(in srgb,${ph.color} 15%,var(--card2))">${ex.ico}</div>
         <div>
           <div class="ex-name">${ex.name}</div>
-          <div class="ex-meta">⏱ ${ex.dur} min &nbsp;·&nbsp; ${diffBadge} ${done?'&nbsp;·&nbsp; ✅ Complété':''}</div>
+          <div class="ex-meta">⏱ ${ex.dur} min${done?' &nbsp;·&nbsp; ✅ Complété':''}</div>
         </div>
       </div>
       <div class="ex-chev">▼</div>
     </div>
     <div class="ex-body">
       <p class="ex-instr">${ex.instr}</p>
-      ${lvNote?`<div class="level-diff-note"><strong>${diffBadge} — Pour ce niveau :</strong> ${lvNote}</div>`:''}
       <ul class="ex-steps">
         ${ex.steps.map((s,i)=>`<li><span class="sn" style="background:${ph.color}">${i+1}</span><span>${s}</span></li>`).join('')}
       </ul>
@@ -1841,14 +1880,23 @@ function scrollToEx(id){
   if(el){el.scrollIntoView({behavior:'smooth',block:'center'});if(!el.classList.contains('open'))el.querySelector('.ex-head').click();}
 }
 
-async function toggleComplete(id,btn){
-  state.completedExercises[id]=!state.completedExercises[id];
+async function toggleComplete(id,checkbox){
+  const done=checkbox?checkbox.checked:!state.completedExercises[id];
+  state.completedExercises[id]=done;
+
+  // Sync calendar
+  const today=getCurrentDay();
+  const anyDone=Object.values(state.completedExercises).some(v=>v);
+  if(done) state.calProgress[today]=true;
+  else if(!anyDone) state.calProgress[today]=false;
+
   await saveState();
-  const meta=document.querySelector(`#ex-${id} .ex-meta`);
-  const done=state.completedExercises[id];
-  if(meta)meta.innerHTML=`⏱ ${PHASES.flatMap(p=>p.exercises).find(e=>e.id===id)?.dur||0} min ${done?'· ✅ Complété':''}`;
-  btn.textContent=done?'↩ Marquer non fait':'✅ Marquer fait';
-  showToast(done?'✅ Exercice complété !':'↩ Marqué non fait');
+
+  // Update card visual
+  const card=document.getElementById('ex-'+id);
+  if(card) card.classList.toggle('checked',done);
+
+  showToast(done?'✅ Fait — Jour '+today+' marqué dans le calendrier.':'↩ Marqué non fait');
   buildCalendar();
 }
 
